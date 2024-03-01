@@ -28,10 +28,15 @@ public class MysqlTodoRepository implements TodoRepository {
     }
 
     @Override
-    public Todo findByTitle(String title) {
-        TypedQuery<Todo> query = entityManager.createQuery("SELECT t FROM Todo t WHERE t.title = :title", Todo.class);
-        query.setParameter("title", title);
+    public Todo findById(Long id) {
+        TypedQuery<Todo> query = entityManager.createQuery("SELECT t FROM Todo t WHERE t.id = :id", Todo.class);
+        query.setParameter("id", id);
         return query.getSingleResult();
+    }
+
+    @Override
+    public void update(Todo todo) {
+        entityManager.merge(todo);
     }
 
     @Override

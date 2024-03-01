@@ -8,7 +8,8 @@ import java.util.List;
 public interface TodoRepository {
     void save(Todo todo);
     List<Todo> findAll();
-    Todo findByTitle(String title);
+    Todo findById(Long id);
+    void update(Todo todo);
     void delete(Todo todo);
     void deleteAll();
 }
