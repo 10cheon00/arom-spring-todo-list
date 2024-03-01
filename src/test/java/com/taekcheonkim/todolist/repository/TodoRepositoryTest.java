@@ -12,11 +12,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class RepositoryTest {
+public class TodoRepositoryTest {
     private final TodoRepository todoRepository;
 
     @Autowired
-    public RepositoryTest(TodoRepository todoRepository) {
+    public TodoRepositoryTest(TodoRepository todoRepository) {
         this.todoRepository = todoRepository;
     }
 
