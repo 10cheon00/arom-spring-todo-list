@@ -1,9 +1,6 @@
 package com.taekcheonkim.todolist.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
@@ -12,11 +9,28 @@ public class Todo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String title;
+    @Column(nullable = false)
     private String description;
+    @Column(columnDefinition = "BIT(1) DEFAULT b'1'", nullable = false)
     private boolean isDone;
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
     private Date startDate;
     private Date endDate;
+
+    public Todo() {
+        this.title = "";
+        this.description = "";
+        this.isDone = false;
+        this.startDate = new Date();
+    }
+
+    public Todo(String title, String description) {
+        this();
+        this.title = title;
+        this.description = description;
+    }
 
     public void setId(Long id) {
         this.id = id;
