@@ -2,7 +2,6 @@ package com.taekcheonkim.todolist.repository;
 
 import com.taekcheonkim.todolist.domain.Todo;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

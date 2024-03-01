@@ -47,8 +47,8 @@ public class RepositoryTest {
     @Test
     public void ReadSpecificTodo() {
         // given
-        Todo todo1 = new Todo("Title1", "");
-        Todo todo2 = new Todo("Title2", "");
+        Todo todo1 = new Todo("Todo 1", "");
+        Todo todo2 = new Todo("Todo 2", "");
         todoRepository.save(todo1);
         todoRepository.save(todo2);
         // when

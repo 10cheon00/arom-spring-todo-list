@@ -20,10 +20,10 @@ public class Todo {
     private Date endDate;
 
     public Todo() {
-        this.title = "";
-        this.description = "";
         this.isDone = false;
         this.startDate = new Date();
+        this.title = "";
+        this.description = "";
     }
 
     public Todo(String title, String description) {
