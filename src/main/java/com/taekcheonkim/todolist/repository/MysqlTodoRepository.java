@@ -2,6 +2,7 @@ package com.taekcheonkim.todolist.repository;
 
 import com.taekcheonkim.todolist.domain.Todo;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,27 +18,29 @@ public class MysqlTodoRepository implements TodoRepository {
     }
 
     @Override
-    public Todo save(Todo todo) {
-        return null;
+    public void save(Todo todo) {
+        entityManager.persist(todo);
     }
 
     @Override
     public List<Todo> findAll() {
-        return null;
+        return entityManager.createQuery("SELECT t FROM Todo t", Todo.class).getResultList();
     }
 
     @Override
     public Todo findByTitle(String title) {
-        return null;
+        TypedQuery<Todo> query = entityManager.createQuery("SELECT t FROM Todo t WHERE t.title = :title", Todo.class);
+        query.setParameter("title", title);
+        return query.getSingleResult();
     }
 
     @Override
     public void delete(Todo todo) {
-
+        entityManager.remove(todo);
     }
 
     @Override
-    public void clear() {
-
+    public void deleteAll() {
+        entityManager.createQuery("DELETE FROM Todo t").executeUpdate();
     }
 }
