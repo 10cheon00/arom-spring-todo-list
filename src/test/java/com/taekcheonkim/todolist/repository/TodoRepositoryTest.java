@@ -12,11 +12,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class RepositoryTest {
+public class TodoRepositoryTest {
     private final TodoRepository todoRepository;
 
     @Autowired
-    public RepositoryTest(TodoRepository todoRepository) {
+    public TodoRepositoryTest(TodoRepository todoRepository) {
         this.todoRepository = todoRepository;
     }
 
@@ -32,7 +32,7 @@ public class RepositoryTest {
     }
     
     @Test
-    public void ReadTodo() {
+    public void ReadAllTodo() {
         // given
         Todo todo1 = new Todo();
         Todo todo2 = new Todo();
@@ -45,18 +45,21 @@ public class RepositoryTest {
     }
 
     @Test
-    public void ReadSpecificTodo() {
+    public void ReadTodoById() {
         // given
-        Todo todo1 = new Todo("Todo 1", "");
-        Todo todo2 = new Todo("Todo 2", "");
-        todoRepository.save(todo1);
-        todoRepository.save(todo2);
+        Todo todo = new Todo("Todo 1", "");
+        todoRepository.save(todo);
         // when
-        Todo result1 = todoRepository.findByTitle(todo1.getTitle());
-        Todo result2 = todoRepository.findByTitle(todo2.getTitle());
+        Todo result1 = todoRepository.findById(todo.getId());
         // then
-        assertThat(result1.getTitle()).isEqualTo(todo1.getTitle());
-        assertThat(result2.getTitle()).isEqualTo(todo2.getTitle());
+        assertThat(result1.getId()).isEqualTo(todo.getId());
+    }
+
+    @Test
+    public void ReadTodoByEmail() {
+        // given
+        // when
+        // then
     }
     
     @Test
@@ -67,8 +70,8 @@ public class RepositoryTest {
         // when
         String newTitle = "New Todo";
         todo.setTitle(newTitle);
-        todoRepository.save(todo);
-        Todo updatedTodo = todoRepository.findByTitle(todo.getTitle());
+        todoRepository.update(todo);
+        Todo updatedTodo = todoRepository.findById(todo.getId());
         // then
         assertThat(updatedTodo.getTitle()).isEqualTo(todo.getTitle());
     }
