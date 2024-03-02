@@ -15,6 +15,7 @@ import java.util.List;
 @Repository
 public class MysqlUserRepository implements UserRepository {
     private final EntityManager entityManager;
+
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
