@@ -1,7 +1,6 @@
-package com.taekcheonkim.todolist.repository;
+package com.taekcheonkim.todolist.todo.repository;
 
-import com.taekcheonkim.todolist.domain.Todo;
-import org.springframework.stereotype.Repository;
+import com.taekcheonkim.todolist.todo.domain.Todo;
 
 import java.util.List;
 

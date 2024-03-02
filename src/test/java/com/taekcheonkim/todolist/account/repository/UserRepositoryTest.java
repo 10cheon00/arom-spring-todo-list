@@ -1,6 +1,9 @@
-package com.taekcheonkim.todolist.repository;
+package com.taekcheonkim.todolist.account.repository;
 
-import com.taekcheonkim.todolist.domain.User;
+import com.taekcheonkim.todolist.account.domain.User;
+import com.taekcheonkim.todolist.account.exception.DuplicatedUserEmailException;
+import com.taekcheonkim.todolist.account.exception.DuplicatedUserNicknameException;
+import com.taekcheonkim.todolist.account.util.PasswordEncoder;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +16,17 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 @Transactional
 public class UserRepositoryTest {
-    private final UserRepository userRepository;
     private final String email = "user1@test.com";
     private final String password = "password123";
     private final String nickname = "test-user";
 
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserRepositoryTest(UserRepository userRepository) {
+    public UserRepositoryTest(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     private User generateUser() {
@@ -43,9 +49,9 @@ public class UserRepositoryTest {
         userRepository.save(this.generateUser());
         // when
         User duplicatedEmailUser = new User(email, password, nickname);
-        assertThatException().isThrownBy(() -> {
+        assertThatThrownBy(() -> {
             userRepository.save(duplicatedEmailUser);
-        }).isEqualTo(DuplicatedUserEmailException.class);
+        }).isInstanceOf(DuplicatedUserEmailException.class);
         // then
         List<User> result = userRepository.findAll();
         assertThat(result.size()).isEqualTo(1);
@@ -57,9 +63,9 @@ public class UserRepositoryTest {
         userRepository.save(this.generateUser());
         // when
         User duplicatedEmailUser = new User("anotheruser@test.com", password, nickname);
-        assertThatException().isThrownBy(() -> {
+        assertThatThrownBy(() -> {
             userRepository.save(duplicatedEmailUser);
-        }).isEqualTo(DuplicatedUserNicknameException.class);
+        }).isInstanceOf(DuplicatedUserNicknameException.class);
         // then
         List<User> result = userRepository.findAll();
         assertThat(result.size()).isEqualTo(1);
@@ -84,7 +90,6 @@ public class UserRepositoryTest {
         // when
         User foundUser = userRepository.findByEmail(user.getEmail());
         // then
-        PasswordEncoder passwordEncoder = new PasswordEncoder();
         assertThat(foundUser.getPassword()).isEqualTo(passwordEncoder.encode(password));
     }
 }

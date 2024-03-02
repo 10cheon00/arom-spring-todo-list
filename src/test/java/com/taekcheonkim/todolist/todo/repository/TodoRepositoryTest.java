@@ -1,6 +1,7 @@
-package com.taekcheonkim.todolist.repository;
+package com.taekcheonkim.todolist.todo.repository;
 
-import com.taekcheonkim.todolist.domain.Todo;
+import com.taekcheonkim.todolist.todo.domain.Todo;
+import com.taekcheonkim.todolist.todo.repository.TodoRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.taekcheonkim.todolist.domain;
+package com.taekcheonkim.todolist.todo.domain;
 
 import jakarta.persistence.*;
 
