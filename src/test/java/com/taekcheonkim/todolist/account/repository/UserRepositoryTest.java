@@ -3,7 +3,6 @@ package com.taekcheonkim.todolist.account.repository;
 import com.taekcheonkim.todolist.account.domain.User;
 import com.taekcheonkim.todolist.account.exception.DuplicatedUserEmailException;
 import com.taekcheonkim.todolist.account.exception.DuplicatedUserNicknameException;
-import com.taekcheonkim.todolist.account.util.PasswordEncoder;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -10,8 +10,11 @@ import java.security.NoSuchAlgorithmException;
 
 @Component
 public class PasswordEncoder {
-    @Value(value = "${account.secret-key}")
-    private String secretKey;
+    private final String secretKey;
+
+    public PasswordEncoder(@Value(value = "${account.secret-key}")String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     public String encode(String password) {
         try {
