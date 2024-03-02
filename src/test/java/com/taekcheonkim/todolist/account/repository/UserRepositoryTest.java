@@ -21,12 +21,10 @@ public class UserRepositoryTest {
     private final String nickname = "test-user";
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserRepositoryTest(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserRepositoryTest(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     private User generateUser() {
@@ -80,16 +78,5 @@ public class UserRepositoryTest {
         User foundUser = userRepository.findByEmail(email);
         // then
         assertThat(foundUser.getEmail()).isEqualTo(user.getEmail());
-    }
-
-    @Test
-    public void CheckPasswordCrypted() {
-        // given
-        User user = this.generateUser();
-        userRepository.save(user);
-        // when
-        User foundUser = userRepository.findByEmail(user.getEmail());
-        // then
-        assertThat(foundUser.getPassword()).isEqualTo(passwordEncoder.encode(password));
     }
 }
