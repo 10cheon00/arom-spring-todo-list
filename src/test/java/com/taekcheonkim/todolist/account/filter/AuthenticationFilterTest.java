@@ -14,6 +14,7 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -59,7 +60,7 @@ public class AuthenticationFilterTest {
         // when
         authenticationFilter.doFilterInternal(requestWrapper, responseWrapper, filterChain);
         // then
-        verify(authenticationManager).authenticate(argumentCaptor.capture());
+        verify(authenticationManager).authenticate(Optional.of(argumentCaptor.capture()));
         assertThat(loginDto).isEqualTo(argumentCaptor.getValue());
     }
 
@@ -71,7 +72,7 @@ public class AuthenticationFilterTest {
         // when
         authenticationFilter.doFilterInternal(requestWrapper, responseWrapper, filterChain);
         // then
-        verify(authenticationManager).authenticate(argumentCaptor.capture());
+        verify(authenticationManager).authenticate(Optional.of(argumentCaptor.capture()));
         assertThat(argumentCaptor.getValue()).isNull();
     }
 }
