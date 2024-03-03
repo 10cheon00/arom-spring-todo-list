@@ -1,5 +1,6 @@
 package com.taekcheonkim.todolist.account.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.account.dto.LoginDto;
 import jakarta.servlet.FilterChain;
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.util.SerializationUtils;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
@@ -36,11 +36,10 @@ public class AuthenticationFilterTest {
     private FilterChain filterChain;
     @Mock
     private AuthenticationManager authenticationManager;
-    private final AuthenticationFilter authenticationFilter;
+    private AuthenticationFilter authenticationFilter;
     private final LoginDto loginDto;
 
     public AuthenticationFilterTest() {
-        this.authenticationFilter = new AuthenticationFilter(authenticationManager);
         String email = "user1@test.com";
         String password = "password";
         this.loginDto = new LoginDto(email, password);
@@ -49,30 +48,34 @@ public class AuthenticationFilterTest {
     @BeforeEach
     void setUp() throws ServletException, IOException {
         MockitoAnnotations.openMocks(this);
+        this.authenticationFilter = new AuthenticationFilter(authenticationManager);
         doNothing().when(filterChain).doFilter(requestWrapper, responseWrapper);
     }
 
     @Test
     void delegateLoginDtoToAuthenticationManager() throws ServletException, IOException {
         // given
-        ArgumentCaptor<LoginDto> argumentCaptor = ArgumentCaptor.forClass(LoginDto.class);
-        when(requestWrapper.getContentAsByteArray()).thenReturn(SerializationUtils.serialize(loginDto));
+        ObjectMapper objectMapper = new ObjectMapper();
+        when(requestWrapper.getContentAsByteArray()).thenReturn(objectMapper.writeValueAsBytes(loginDto));
+        ArgumentCaptor<Optional<LoginDto>> argumentCaptor = ArgumentCaptor.forClass(Optional.class);
         // when
         authenticationFilter.doFilterInternal(requestWrapper, responseWrapper, filterChain);
         // then
-        verify(authenticationManager).authenticate(Optional.of(argumentCaptor.capture()));
-        assertThat(loginDto).isEqualTo(argumentCaptor.getValue());
+        verify(authenticationManager).authenticate(argumentCaptor.capture());
+        assertThat(loginDto.getEmail()).isEqualTo(argumentCaptor.getValue().get().getEmail());
+        assertThat(loginDto.getPassword()).isEqualTo(argumentCaptor.getValue().get().getPassword());
     }
 
     @Test
     void delegateEmptyLoginDtoToAuthenticationManagerWhenRequestHasInvalidCredential() throws ServletException, IOException {
         // given
-        ArgumentCaptor<LoginDto> argumentCaptor = ArgumentCaptor.forClass(LoginDto.class);
-        when(requestWrapper.getContentAsByteArray()).thenReturn(SerializationUtils.serialize(null));
+        ObjectMapper objectMapper = new ObjectMapper();
+        when(requestWrapper.getContentAsByteArray()).thenReturn(objectMapper.writeValueAsBytes(null));
+        ArgumentCaptor<Optional<LoginDto>> argumentCaptor = ArgumentCaptor.forClass(Optional.class);
         // when
         authenticationFilter.doFilterInternal(requestWrapper, responseWrapper, filterChain);
         // then
-        verify(authenticationManager).authenticate(Optional.of(argumentCaptor.capture()));
-        assertThat(argumentCaptor.getValue()).isNull();
+        verify(authenticationManager).authenticate(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue()).isEqualTo(Optional.empty());
     }
 }
