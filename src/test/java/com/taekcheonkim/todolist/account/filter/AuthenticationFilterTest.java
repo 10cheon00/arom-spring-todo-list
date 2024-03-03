@@ -1,160 +1,77 @@
 package com.taekcheonkim.todolist.account.filter;
 
-import com.taekcheonkim.todolist.account.domain.User;
+import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.account.dto.LoginDto;
-import com.taekcheonkim.todolist.account.exception.InvalidCredentialException;
-import com.taekcheonkim.todolist.account.repository.UserRepository;
-import com.taekcheonkim.todolist.account.util.PasswordEncoder;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.util.SerializationUtils;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * <h1>AuthenticationFilter</h1>
+ * <p>Request Body에 들어있는 LoginDto를 획득한다.</p>
+ * <p>Bean으로 등록된 AuthenticationManager의 authenticate를 호출하고, LoginDto를 인수로 전달한다.</p>
+ * <h1>Test Purpose</h1>
+ * <p>이 테스트는 ContentCachingRequestWrapper를 Mock 객체로 설정한다. </p>
+ * <p>AuthenticationManager의 authenticate를 호출할 때 적절한 LoginDto를 인자로 전달하였는지 검사한다.</p>
+ */
 public class AuthenticationFilterTest {
     @Mock
-    private HttpServletRequest httpServletRequest;
+    private ContentCachingRequestWrapper requestWrapper;
     @Mock
-    private HttpServletResponse httpServletResponse;
+    private ContentCachingResponseWrapper responseWrapper;
     @Mock
     private FilterChain filterChain;
     @Mock
-    private HttpSession httpSession;
-    @Mock
-    private UserRepository userRepository;
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    private AuthenticationManager authenticationManager;
     private final AuthenticationFilter authenticationFilter;
-
-    private final String authenticationAttribute;
     private final LoginDto loginDto;
-    private final User user;
 
     public AuthenticationFilterTest() {
-        this.authenticationFilter = new AuthenticationFilter(userRepository);
-        authenticationAttribute = "authenticate";
+        this.authenticationFilter = new AuthenticationFilter(authenticationManager);
         String email = "user1@test.com";
         String password = "password";
-        String nickname = "nickname";
         this.loginDto = new LoginDto(email, password);
-        this.user = new User(email, password, nickname);
     }
 
     @BeforeEach
     void setUp() throws ServletException, IOException {
         MockitoAnnotations.openMocks(this);
-        doNothing().when(filterChain).doFilter(httpServletRequest, httpServletResponse);
+        doNothing().when(filterChain).doFilter(requestWrapper, responseWrapper);
     }
 
     @Test
-    void passWithNoCredentialAndNoSession() throws ServletException, IOException {
+    void delegateLoginDtoToAuthenticationManager() throws ServletException, IOException {
         // given
+        ArgumentCaptor<LoginDto> argumentCaptor = ArgumentCaptor.forClass(LoginDto.class);
+        when(requestWrapper.getContentAsByteArray()).thenReturn(SerializationUtils.serialize(loginDto));
         // when
-        when(httpServletRequest.getParameter("username")).thenReturn(null);
-        when(httpServletRequest.getParameter("password")).thenReturn(null);
-        when(httpServletRequest.getSession()).thenReturn(null);
+        authenticationFilter.doFilterInternal(requestWrapper, responseWrapper, filterChain);
         // then
-        verify(httpServletRequest, atLeastOnce()).getSession();
-        verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
-        assertThatNoException().isThrownBy(() -> {
-            authenticationFilter.doFilter(httpServletRequest, httpServletResponse, filterChain);
-        });
+        verify(authenticationManager).authenticate(argumentCaptor.capture());
+        assertThat(loginDto).isEqualTo(argumentCaptor.getValue());
     }
 
     @Test
-    void passByExistSession() throws ServletException, IOException {
+    void delegateEmptyLoginDtoToAuthenticationManagerWhenRequestHasInvalidCredential() throws ServletException, IOException {
         // given
+        ArgumentCaptor<LoginDto> argumentCaptor = ArgumentCaptor.forClass(LoginDto.class);
+        when(requestWrapper.getContentAsByteArray()).thenReturn(SerializationUtils.serialize(null));
         // when
-        when(httpSession.getAttribute(authenticationAttribute)).thenReturn(true);
-        when(httpServletRequest.getSession()).thenReturn(httpSession);
+        authenticationFilter.doFilterInternal(requestWrapper, responseWrapper, filterChain);
         // then
-        verify(httpServletRequest, atLeastOnce()).getSession();
-        verify(httpSession, atLeastOnce()).getAttribute(authenticationAttribute);
-        verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
-        assertThatNoException().isThrownBy(() -> {
-            authenticationFilter.doFilter(httpServletRequest, httpServletResponse, filterChain);
-        });
-    }
-
-    @Test
-    void authenticateWithValidCredentialWhenNoSession() throws ServletException, IOException {
-        // given
-        // when
-        when(httpServletRequest.getSession()).thenReturn(null);
-        when(httpServletRequest.getParameter("username")).thenReturn(loginDto.getEmail());
-        when(httpServletRequest.getParameter("password")).thenReturn(loginDto.getPassword());
-        when(userRepository.findByEmail(loginDto.getEmail())).thenReturn(user);
-        when(passwordEncoder.encode(loginDto.getPassword())).thenReturn(user.getPassword());
-        // then
-        verify(httpServletRequest, atLeastOnce()).getSession();
-        verify(httpServletRequest, atLeastOnce()).getParameter("username");
-        verify(httpServletRequest, atLeastOnce()).getParameter("password");
-        verify(userRepository, atLeastOnce()).findByEmail(loginDto.getEmail());
-        verify(passwordEncoder, atLeastOnce()).encode(loginDto.getPassword());
-        verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
-        assertThatNoException().isThrownBy(() -> {
-            authenticationFilter.doFilter(httpServletRequest, httpServletResponse, filterChain);
-        });
-    }
-
-    @Test
-    void failAuthenticationWithNoUsernameWhenNoSession() throws ServletException, IOException {
-        // given
-        // when
-        when(httpServletRequest.getSession()).thenReturn(null);
-        when(httpServletRequest.getParameter("username")).thenReturn(loginDto.getEmail());
-        when(httpServletRequest.getParameter("password")).thenReturn(null);
-        // then
-        verify(httpServletRequest, atLeastOnce()).getSession();
-        verify(httpServletRequest, atLeastOnce()).getParameter("username");
-        verify(filterChain, never()).doFilter(httpServletRequest, httpServletResponse);
-        assertThatThrownBy(() -> {
-            authenticationFilter.doFilter(httpServletRequest, httpServletResponse, filterChain);
-        }).isInstanceOf(InvalidCredentialException.class);
-    }
-
-    @Test
-    void failAuthenticationWithNoPasswordWhenNoSession() throws ServletException, IOException {
-        // given
-        // when
-        when(httpServletRequest.getSession()).thenReturn(null);
-        when(httpServletRequest.getParameter("username")).thenReturn(loginDto.getEmail());
-        when(httpServletRequest.getParameter("password")).thenReturn(null);
-        // then
-        verify(httpServletRequest, atLeastOnce()).getSession();
-        verify(httpServletRequest, atLeastOnce()).getParameter("username");
-        verify(httpServletRequest, atLeastOnce()).getParameter("password");
-        verify(filterChain, never()).doFilter(httpServletRequest, httpServletResponse);
-        assertThatThrownBy(() -> {
-            authenticationFilter.doFilter(httpServletRequest, httpServletResponse, filterChain);
-        }).isInstanceOf(InvalidCredentialException.class);
-    }
-
-    @Test
-    void failAuthenticationWithInvalidLoginDtoWhenNoSession() throws ServletException, IOException {
-        // given
-        // when
-        when(httpServletRequest.getSession()).thenReturn(null);
-        when(httpServletRequest.getParameter("username")).thenReturn(loginDto.getEmail());
-        when(httpServletRequest.getParameter("password")).thenReturn(loginDto.getPassword());
-        when(userRepository.findByEmail(loginDto.getEmail())).thenReturn(null);
-        // then
-        verify(httpServletRequest, atLeastOnce()).getSession();
-        verify(httpServletRequest, atLeastOnce()).getParameter("username");
-        verify(httpServletRequest, atLeastOnce()).getParameter("password");
-        verify(userRepository, atLeastOnce()).findByEmail(loginDto.getEmail());
-        verify(filterChain, never()).doFilter(httpServletRequest, httpServletResponse);
-        assertThatThrownBy(() -> {
-            authenticationFilter.doFilter(httpServletRequest, httpServletResponse, filterChain);
-        }).isInstanceOf(InvalidCredentialException.class);
+        verify(authenticationManager).authenticate(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue()).isNull();
     }
 }

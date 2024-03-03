@@ -1,6 +1,6 @@
 package com.taekcheonkim.todolist.account.filter;
 
-import com.taekcheonkim.todolist.account.repository.UserRepository;
+import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,11 +12,11 @@ import java.io.IOException;
 
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
-    private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public AuthenticationFilter(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public AuthenticationFilter(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
