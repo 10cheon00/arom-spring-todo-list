@@ -16,4 +16,10 @@ public class LoginDto {
     public String getPassword() {
         return password;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        LoginDto loginDto = (LoginDto) o;
+        return email.equals(loginDto.getEmail()) && password.equals(loginDto.getPassword());
+    }
 }
