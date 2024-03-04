@@ -1,5 +1,6 @@
 package com.taekcheonkim.todolist.account.authentication;
 
+import com.taekcheonkim.todolist.account.domain.User;
 import com.taekcheonkim.todolist.account.dto.LoginDto;
 import com.taekcheonkim.todolist.account.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,11 @@ public class AuthenticationManager {
     }
 
     public AuthenticatedUserHolder authenticate(Optional<LoginDto> maybeLoginDto) {
-        return null;
+        if(maybeLoginDto.isPresent()) {
+            LoginDto loginDto = maybeLoginDto.get();
+            User user = userRepository.findByEmail(loginDto.getEmail());
+            return new AuthenticatedUserHolder(Optional.of(user));
+        }
+        return new AuthenticatedUserHolder(Optional.empty());
     }
 }
