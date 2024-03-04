@@ -14,6 +14,9 @@ public class ContentCachingRequestAndResponseWrapperFilter extends OncePerReques
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        filterChain.doFilter(request, response);
+        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
+        ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
+        filterChain.doFilter(requestWrapper, responseWrapper);
+        responseWrapper.copyBodyToResponse();
     }
 }
