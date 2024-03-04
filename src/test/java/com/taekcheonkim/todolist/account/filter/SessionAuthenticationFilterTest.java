@@ -6,16 +6,16 @@ import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.account.domain.User;
 import com.taekcheonkim.todolist.account.dto.LoginDto;
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.web.util.ContentCachingRequestWrapper;
-import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -37,14 +37,12 @@ import static org.mockito.Mockito.*;
  * </ul>
  */
 public class SessionAuthenticationFilterTest {
-    @Mock
-    private ContentCachingRequestWrapper requestWrapper;
-    @Mock
-    private ContentCachingResponseWrapper responseWrapper;
-    @Mock
-    private FilterChain filterChain;
-    private MockHttpSession mockHttpSession;
+    private MockHttpServletRequest request;
+    private MockHttpServletResponse response;
+    private MockFilterChain filterChain;
+    private MockHttpSession httpSession;
     private final String authenticationAttribute;
+
     @Mock
     private AuthenticationManager authenticationManager;
     private SessionAuthenticationFilter sessionAuthenticationFilter;
@@ -71,20 +69,22 @@ public class SessionAuthenticationFilterTest {
     @BeforeEach
     void setUp() throws ServletException, IOException {
         MockitoAnnotations.openMocks(this);
-        doNothing().when(filterChain).doFilter(requestWrapper, responseWrapper);
-        mockHttpSession = new MockHttpSession();
-        when(requestWrapper.getSession()).thenReturn(mockHttpSession);
         sessionAuthenticationFilter = new SessionAuthenticationFilter(authenticationManager);
+        request = new MockHttpServletRequest();
+        httpSession = new MockHttpSession();
+        request.setSession(httpSession);
+        response = new MockHttpServletResponse();
+        filterChain = new MockFilterChain();
     }
 
     @Test
     void extractLoginDtoFromContentCachingRequestWrapper() throws ServletException, IOException {
         ArgumentCaptor<Optional<LoginDto>> argumentCaptor = ArgumentCaptor.forClass(Optional.class);
         // given
-        when(requestWrapper.getContentAsByteArray()).thenReturn(loginDtoBytes);
+        request.setContent(loginDtoBytes);
         when(authenticationManager.authenticate(any(Optional.class))).thenReturn(new AuthenticatedUserHolder(Optional.of(user)));
         // when
-        sessionAuthenticationFilter.doFilterInternal(requestWrapper, responseWrapper, filterChain);
+        sessionAuthenticationFilter.doFilterInternal(request, response, filterChain);
         // then
         verify(authenticationManager).authenticate(argumentCaptor.capture());
         Optional<LoginDto> maybeLoginDto = argumentCaptor.getValue();
@@ -95,22 +95,22 @@ public class SessionAuthenticationFilterTest {
     @Test
     void setSessionAttributeToTrueAfterAuthenticationWithValidLoginDto() throws ServletException, IOException {
         // given
-        when(requestWrapper.getContentAsByteArray()).thenReturn(loginDtoBytes);
-        when(authenticationManager.authenticate(Optional.of(loginDto))).thenReturn(new AuthenticatedUserHolder(Optional.of(user)));
+        request.setContent(loginDtoBytes);
+        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(new AuthenticatedUserHolder(Optional.of(user)));
         // when
-        sessionAuthenticationFilter.doFilterInternal(requestWrapper, responseWrapper, filterChain);
+        sessionAuthenticationFilter.doFilterInternal(request, response, filterChain);
         // then
-        assertThat(mockHttpSession.getAttribute(authenticationAttribute)).isEqualTo(true);
+        assertThat(httpSession.getAttribute(authenticationAttribute)).isEqualTo(true);
     }
 
     @Test
     void setSessionAttributeToFalseAfterAuthenticationWithValidLoginDto() throws ServletException, IOException {
         // given
-        when(requestWrapper.getContentAsByteArray()).thenReturn(loginDtoBytes);
-        when(authenticationManager.authenticate(Optional.of(loginDto))).thenReturn(new AuthenticatedUserHolder(Optional.empty()));
+        request.setContent(loginDtoBytes);
+        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(new AuthenticatedUserHolder(Optional.empty()));
         // when
-        sessionAuthenticationFilter.doFilterInternal(requestWrapper, responseWrapper, filterChain);
+        sessionAuthenticationFilter.doFilterInternal(request, response, filterChain);
         // then
-        assertThat(mockHttpSession.getAttribute(authenticationAttribute)).isEqualTo(false);
+        assertThat(httpSession.getAttribute(authenticationAttribute)).isEqualTo(false);
     }
 }
