@@ -21,4 +21,10 @@ public class SessionAuthenticationFilter extends AuthenticationFilter {
         HttpSession httpSession = request.getSession();
         httpSession.setAttribute(sessionAttribute, true);
     }
+
+    @Override
+    protected void afterFailAuthentication(HttpServletRequest request) {
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute(sessionAttribute, false);
+    }
 }
