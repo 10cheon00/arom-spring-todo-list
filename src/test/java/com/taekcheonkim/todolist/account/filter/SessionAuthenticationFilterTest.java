@@ -72,21 +72,24 @@ public class SessionAuthenticationFilterTest {
     void setUp() throws ServletException, IOException {
         MockitoAnnotations.openMocks(this);
         doNothing().when(filterChain).doFilter(requestWrapper, responseWrapper);
+        mockHttpSession = new MockHttpSession();
         when(requestWrapper.getSession()).thenReturn(mockHttpSession);
         sessionAuthenticationFilter = new SessionAuthenticationFilter(authenticationManager);
-        mockHttpSession = new MockHttpSession();
     }
 
     @Test
     void extractLoginDtoFromContentCachingRequestWrapper() throws ServletException, IOException {
-        ArgumentCaptor<Optional> argumentCaptor = ArgumentCaptor.forClass(Optional.class);
+        ArgumentCaptor<Optional<LoginDto>> argumentCaptor = ArgumentCaptor.forClass(Optional.class);
         // given
         when(requestWrapper.getContentAsByteArray()).thenReturn(loginDtoBytes);
+        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(new AuthenticatedUserHolder(Optional.of(user)));
         // when
         sessionAuthenticationFilter.doFilterInternal(requestWrapper, responseWrapper, filterChain);
         // then
         verify(authenticationManager).authenticate(argumentCaptor.capture());
-        assertThat(argumentCaptor.getValue().get()).isEqualTo(loginDto);
+        Optional<LoginDto> maybeLoginDto = argumentCaptor.getValue();
+        assertThat(maybeLoginDto.isPresent()).isTrue();
+        assertThat(maybeLoginDto.get()).isEqualTo(loginDto);
     }
 
     @Test

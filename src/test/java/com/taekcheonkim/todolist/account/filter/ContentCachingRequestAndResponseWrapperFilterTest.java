@@ -11,15 +11,19 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 
 public class ContentCachingRequestAndResponseWrapperFilterTest {
     private final ContentCachingRequestAndResponseWrapperFilter wrapperFilter;
+    private final byte[] content;
 
     public ContentCachingRequestAndResponseWrapperFilterTest() {
         this.wrapperFilter = new ContentCachingRequestAndResponseWrapperFilter();
+        this.content = "1234567890".getBytes();
     }
 
     @Test
@@ -45,13 +49,14 @@ public class ContentCachingRequestAndResponseWrapperFilterTest {
         // given
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
+        request.setContent(content);
         class FakeFilterChain extends MockFilterChain {
             @Override
-            public void doFilter(ServletRequest request, ServletResponse response) {
-                ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request);
-                ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper((HttpServletResponse) response);
-                assertThat(requestWrapper.getContentAsByteArray()).isNotNull();
-                assertThat(requestWrapper.getContentAsByteArray()).isNotNull();
+            public void doFilter(ServletRequest request, ServletResponse response) throws IOException {
+                ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
+                // 한 번 InputStream으로 읽어야 getContentAs~를 통해 캐싱된 body를 획득 가능하다.
+                assertThat(requestWrapper.getInputStream().readAllBytes()).isEqualTo(content);
+                assertThat(requestWrapper.getContentAsByteArray()).isEqualTo(content);
             }
         }
         FakeFilterChain fakeFilterChain = new FakeFilterChain();
