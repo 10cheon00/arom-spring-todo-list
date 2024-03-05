@@ -3,6 +3,7 @@ package com.taekcheonkim.todolist.account.filter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
+import com.taekcheonkim.todolist.account.authentication.AuthenticationContext;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.account.domain.User;
 import com.taekcheonkim.todolist.account.dto.LoginDto;
@@ -41,14 +42,17 @@ public class SessionAuthenticationFilterTest {
     private MockHttpServletResponse response;
     private MockFilterChain filterChain;
     private MockHttpSession httpSession;
-    private final String authenticationAttribute;
+    private String attributeKeyOfAuthenticated;
+    private String attributeKeyOfAuthenticatedUserHolder;
 
     @Mock
     private AuthenticationManager authenticationManager;
+    private AuthenticationContext authenticationContext;
+    private final AuthenticatedUserHolder authenticatedUserHolder;
+    private final AuthenticatedUserHolder notAuthenticatedUserHolder;
     private SessionAuthenticationFilter sessionAuthenticationFilter;
     private final LoginDto loginDto;
     private final User user;
-    private final ObjectMapper objectMapper;
     private final byte[] loginDtoBytes;
 
     public SessionAuthenticationFilterTest() {
@@ -57,24 +61,30 @@ public class SessionAuthenticationFilterTest {
         this.loginDto = new LoginDto(email, password);
         this.user = new User(email, password, "");
 
-        this.authenticationAttribute = "authentication";
         try {
-            this.objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = new ObjectMapper();
             this.loginDtoBytes = objectMapper.writeValueAsBytes(loginDto);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+
+        this.authenticatedUserHolder = new AuthenticatedUserHolder(Optional.of(this.user));
+        this.notAuthenticatedUserHolder = new AuthenticatedUserHolder(Optional.empty());
     }
 
     @BeforeEach
-    void setUp() throws ServletException, IOException {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        sessionAuthenticationFilter = new SessionAuthenticationFilter(authenticationManager);
+        authenticationContext = new AuthenticationContext();
+        sessionAuthenticationFilter = new SessionAuthenticationFilter(authenticationManager, authenticationContext);
         request = new MockHttpServletRequest();
         httpSession = new MockHttpSession();
         request.setSession(httpSession);
         response = new MockHttpServletResponse();
         filterChain = new MockFilterChain();
+
+        attributeKeyOfAuthenticated = sessionAuthenticationFilter.getAttributeKeyOfAuthenticate();
+        attributeKeyOfAuthenticatedUserHolder = sessionAuthenticationFilter.getAttributeKeyOfAuthenticatedUserHolder();
     }
 
     @Test
@@ -82,7 +92,7 @@ public class SessionAuthenticationFilterTest {
         ArgumentCaptor<Optional<LoginDto>> argumentCaptor = ArgumentCaptor.forClass(Optional.class);
         // given
         request.setContent(loginDtoBytes);
-        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(new AuthenticatedUserHolder(Optional.of(user)));
+        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(authenticatedUserHolder);
         // when
         sessionAuthenticationFilter.doFilterInternal(request, response, filterChain);
         // then
@@ -93,36 +103,40 @@ public class SessionAuthenticationFilterTest {
     }
 
     @Test
-    void setSessionAttributeToTrueAfterAuthenticationWithValidLoginDto() throws ServletException, IOException {
+    void successAuthenticationWithValidLoginDto() throws ServletException, IOException {
         // given
         request.setContent(loginDtoBytes);
-        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(new AuthenticatedUserHolder(Optional.of(user)));
+        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(authenticatedUserHolder);
         // when
         sessionAuthenticationFilter.doFilterInternal(request, response, filterChain);
         // then
-        assertThat(httpSession.getAttribute(authenticationAttribute)).isEqualTo(true);
+        assertThat(httpSession.getAttribute(attributeKeyOfAuthenticated)).isEqualTo(true);
+        assertThat(authenticationContext.getAuthenticatedUserHolder().isAuthenticated()).isEqualTo(true);
     }
 
     @Test
-    void setSessionAttributeToFalseAfterAuthenticationWithValidLoginDto() throws ServletException, IOException {
+    void failAuthenticationWithNotFoundUser() throws ServletException, IOException {
         // given
         request.setContent(loginDtoBytes);
-        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(new AuthenticatedUserHolder(Optional.empty()));
+        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(notAuthenticatedUserHolder);
         // when
         sessionAuthenticationFilter.doFilterInternal(request, response, filterChain);
         // then
-        assertThat(httpSession.getAttribute(authenticationAttribute)).isEqualTo(false);
+        assertThat(httpSession.getAttribute(attributeKeyOfAuthenticated)).isEqualTo(false);
+        assertThat(authenticationContext.getAuthenticatedUserHolder().isAuthenticated()).isEqualTo(false);
     }
 
     @Test
-    void failAuthenticationButSessionAttributeIsTrueWhenUserWasAuthenticated() throws ServletException, IOException {
+    void successAuthenticationWithNoLoginDtoButSessionAttributeIsTrue() throws ServletException, IOException {
         // given
         request.setContent(null);
-        httpSession.setAttribute(authenticationAttribute, true);
-        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(new AuthenticatedUserHolder(Optional.empty()));
+        httpSession.setAttribute(attributeKeyOfAuthenticated, true);
+        httpSession.setAttribute(attributeKeyOfAuthenticatedUserHolder, authenticatedUserHolder);
+        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(notAuthenticatedUserHolder);
         // when
         sessionAuthenticationFilter.doFilterInternal(request, response, filterChain);
         // then
-        assertThat(httpSession.getAttribute(authenticationAttribute)).isEqualTo(true);
+        assertThat(httpSession.getAttribute(attributeKeyOfAuthenticated)).isEqualTo(true);
+        assertThat(authenticationContext.getAuthenticatedUserHolder().isAuthenticated()).isEqualTo(true);
     }
 }
