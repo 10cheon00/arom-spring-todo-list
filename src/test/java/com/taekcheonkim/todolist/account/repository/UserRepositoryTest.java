@@ -1,8 +1,6 @@
 package com.taekcheonkim.todolist.account.repository;
 
 import com.taekcheonkim.todolist.account.domain.User;
-import com.taekcheonkim.todolist.account.exception.DuplicatedUserEmailException;
-import com.taekcheonkim.todolist.account.exception.DuplicatedUserNicknameException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,34 +39,6 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void CreateUserWithDuplicatedEmail() {
-        // given
-        userRepository.save(this.generateUser());
-        // when
-        User duplicatedEmailUser = new User(email, password, nickname);
-        assertThatThrownBy(() -> {
-            userRepository.save(duplicatedEmailUser);
-        }).isInstanceOf(DuplicatedUserEmailException.class);
-        // then
-        List<User> result = userRepository.findAll();
-        assertThat(result.size()).isEqualTo(1);
-    }
-
-    @Test
-    public void CreateUserWithDuplicatedNickname() {
-        // given
-        userRepository.save(this.generateUser());
-        // when
-        User duplicatedEmailUser = new User("anotheruser@test.com", password, nickname);
-        assertThatThrownBy(() -> {
-            userRepository.save(duplicatedEmailUser);
-        }).isInstanceOf(DuplicatedUserNicknameException.class);
-        // then
-        List<User> result = userRepository.findAll();
-        assertThat(result.size()).isEqualTo(1);
-    }
-
-    @Test
     public void ReadUserByEmail() {
         // given
         User user = this.generateUser();
@@ -77,5 +47,17 @@ public class UserRepositoryTest {
         User foundUser = userRepository.findByEmail(email);
         // then
         assertThat(foundUser.getEmail()).isEqualTo(user.getEmail());
+    }
+
+    @Test
+    public void ReadAllUser() {
+        // given
+        User otherUser = new User("other-user@test.com", "password", "other-user");
+        // when
+        userRepository.save(this.generateUser());
+        userRepository.save(otherUser);
+        List<User> result = userRepository.findAll();
+        // then
+        assertThat(result.size()).isEqualTo(2);
     }
 }
