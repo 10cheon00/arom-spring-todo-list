@@ -1,5 +1,6 @@
 package com.taekcheonkim.todolist.account.domain;
 
+import com.taekcheonkim.todolist.account.dto.UserFormDto;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,7 +16,11 @@ public class User {
     private String nickname;
 
     public User() {
+        this("", "", "");
+    }
 
+    public User(UserFormDto userFormDto) {
+        this(userFormDto.getEmail(), userFormDto.getPassword(), userFormDto.getNickname());
     }
 
     public User(String email, String password, String nickname) {

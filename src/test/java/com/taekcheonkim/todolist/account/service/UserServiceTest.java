@@ -9,20 +9,20 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class UserServiceTest {
-    private final UserService userService;
+    private UserService userService;
     @Mock
     private UserRepository userRepository;
     private final UserFormDto userFormDto;
     private final User alreadyExistUser;
 
     public UserServiceTest() {
-        this.userService = new UserService(userRepository);
-
         String email = "test@domain.com";
         String password = "testpassword";
         String nickname = "testnickname";

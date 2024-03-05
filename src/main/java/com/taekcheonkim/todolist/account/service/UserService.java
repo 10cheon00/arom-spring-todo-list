@@ -2,8 +2,11 @@ package com.taekcheonkim.todolist.account.service;
 
 import com.taekcheonkim.todolist.account.domain.User;
 import com.taekcheonkim.todolist.account.dto.UserFormDto;
+import com.taekcheonkim.todolist.account.exception.InvalidUserFormException;
 import com.taekcheonkim.todolist.account.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -13,8 +16,14 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-
     public User signIn(UserFormDto userFormDto) {
-        return null;
+        Optional<User> maybeUser = userRepository.findByEmail(userFormDto.getEmail());
+        if (maybeUser.isPresent()) {
+            throw new InvalidUserFormException("Already exists email.");
+        }
+
+        User user = new User(userFormDto);
+        userRepository.save(user);
+        return user;
     }
 }
