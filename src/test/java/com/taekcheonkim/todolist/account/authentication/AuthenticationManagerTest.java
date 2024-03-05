@@ -1,4 +1,4 @@
-package com.taekcheonkim.todolist.account.filter;
+package com.taekcheonkim.todolist.account.authentication;
 
 import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
