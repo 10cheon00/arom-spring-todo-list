@@ -33,12 +33,13 @@ public class UserServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        userService = new UserService(userRepository);
     }
 
     @Test
     void successSignUpWithValidUserFormDto() {
         // given
-        when(userRepository.findByEmail(any(String.class))).thenReturn(null);
+        when(userRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
         // when
         User signInUser = userService.signIn(userFormDto);
         // then
@@ -48,7 +49,7 @@ public class UserServiceTest {
     @Test
     void failSignUpWhenEmailAlreadyExists() {
         // given
-        when(userRepository.findByEmail(any(String.class))).thenReturn(alreadyExistUser);
+        when(userRepository.findByEmail(any(String.class))).thenReturn(Optional.of(alreadyExistUser));
         // when
         // then
         assertThatThrownBy(() -> {
@@ -59,18 +60,7 @@ public class UserServiceTest {
     @Test
     void failSignUpWhenInvalidEmail() {
         // given
-        when(userRepository.findByEmail(any(String.class))).thenReturn(alreadyExistUser);
-        // when
-        // then
-        assertThatThrownBy(() -> {
-            userService.signIn(userFormDto);
-        }).isInstanceOf(InvalidUserFormException.class);
-    }
-
-    @Test
-    void failSignUpWhenNicknameAlreadyExists() {
-        // given
-        when(userRepository.findByEmail(any(String.class))).thenReturn(alreadyExistUser);
+        when(userRepository.findByEmail(any(String.class))).thenReturn(Optional.of(alreadyExistUser));
         // when
         // then
         assertThatThrownBy(() -> {

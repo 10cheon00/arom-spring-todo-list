@@ -51,7 +51,7 @@ public class AuthenticationManagerTest {
         MockitoAnnotations.openMocks(this);
         authenticationManager = new AuthenticationManager(userRepository);
         loginDto = new LoginDto(email, password);
-        when(userRepository.findByEmail(loginDto.getEmail())).thenReturn(user);
+        when(userRepository.findByEmail(loginDto.getEmail())).thenReturn(Optional.of(user));
     }
 
     @Test

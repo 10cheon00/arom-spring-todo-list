@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -44,7 +45,8 @@ public class UserRepositoryTest {
         User user = this.generateUser();
         userRepository.save(user);
         // when
-        User foundUser = userRepository.findByEmail(email);
+        Optional<User> maybeUser = userRepository.findByEmail(email);
+        User foundUser = maybeUser.get();
         // then
         assertThat(foundUser.getEmail()).isEqualTo(user.getEmail());
     }
