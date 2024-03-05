@@ -8,23 +8,27 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SessionAuthenticationFilter extends AuthenticationFilter {
-    private final String sessionAttribute;
+    private final String sessionAttributeKey;
 
     @Autowired
     public SessionAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
-        this.sessionAttribute = "authentication";
+        this.sessionAttributeKey = "authentication";
     }
 
     @Override
     protected void afterSuccessAuthentication(HttpServletRequest request) {
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute(sessionAttribute, true);
+        httpSession.setAttribute(sessionAttributeKey, true);
     }
 
     @Override
     protected void afterFailAuthentication(HttpServletRequest request) {
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute(sessionAttribute, false);
+        Object sessionAttribute = httpSession.getAttribute(sessionAttributeKey);
+        boolean wasNotAuthenticated = sessionAttribute == null || !(boolean)sessionAttribute;
+        if (wasNotAuthenticated) {
+            httpSession.setAttribute(sessionAttributeKey, false);
+        }
     }
 }
