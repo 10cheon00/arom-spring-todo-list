@@ -113,4 +113,16 @@ public class SessionAuthenticationFilterTest {
         // then
         assertThat(httpSession.getAttribute(authenticationAttribute)).isEqualTo(false);
     }
+
+    @Test
+    void failAuthenticationButSessionAttributeIsTrueWhenUserWasAuthenticated() throws ServletException, IOException {
+        // given
+        request.setContent(null);
+        httpSession.setAttribute(authenticationAttribute, true);
+        when(authenticationManager.authenticate(any(Optional.class))).thenReturn(new AuthenticatedUserHolder(Optional.empty()));
+        // when
+        sessionAuthenticationFilter.doFilterInternal(request, response, filterChain);
+        // then
+        assertThat(httpSession.getAttribute(authenticationAttribute)).isEqualTo(true);
+    }
 }
