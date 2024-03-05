@@ -1,4 +1,4 @@
-package com.taekcheonkim.todolist.account.filter;
+package com.taekcheonkim.todolist.account.util;
 
 import com.taekcheonkim.todolist.account.util.MultipleReadableHttpServletRequestWrapper;
 import org.junit.jupiter.api.Test;
