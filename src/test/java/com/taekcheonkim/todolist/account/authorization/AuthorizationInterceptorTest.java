@@ -5,7 +5,6 @@ import com.taekcheonkim.todolist.account.authentication.AuthenticationContext;
 import com.taekcheonkim.todolist.account.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -18,7 +17,6 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 /**
  * <h1>AuthorizationInterceptor</h1>
@@ -38,8 +36,7 @@ public class AuthorizationInterceptorTest {
     private MockHttpServletResponse response;
     private MockFilterChain filterChain;
 
-    @Mock
-    private AuthenticationContext authenticationContext;
+    private final AuthenticationContext authenticationContext;
     private final AuthenticatedUserHolder authenticatedUserHolder;
     private final AuthenticatedUserHolder notAuthenticatedUserHolder;
 
@@ -50,14 +47,14 @@ public class AuthorizationInterceptorTest {
     private final NoAuthorizeController noAuthorizeController;
 
     public AuthorizationInterceptorTest() {
-        this.authorizationInterceptor = new AuthorizationInterceptor(authenticationContext);
-
         User user = new User("email", "password", "");
         this.authenticatedUserHolder = new AuthenticatedUserHolder(Optional.of(user));
         this.notAuthenticatedUserHolder = new AuthenticatedUserHolder(Optional.empty());
+        this.authenticationContext = new AuthenticationContext();
         this.preAuthorizeInClassController = new PreAuthorizeInClassController();
         this.preAuthorizeInMethodController = new PreAuthorizeInMethodController();
         this.noAuthorizeController = new NoAuthorizeController();
+        this.authorizationInterceptor = new AuthorizationInterceptor(authenticationContext);
     }
 
     @BeforeEach
@@ -71,7 +68,7 @@ public class AuthorizationInterceptorTest {
     @Test
     void noAuthorizeWhenRequestUrlPatternNotRequireAuthorization() throws Exception {
         // given
-        when(authenticationContext.getAuthenticatedUserHolder()).thenReturn(notAuthenticatedUserHolder);
+        authenticationContext.setAuthenticatedUserHolder(notAuthenticatedUserHolder);
         method = NoAuthorizeController.class.getMethod("foo");
         handlerMethod = new HandlerMethod(noAuthorizeController, method);
         // when
@@ -83,7 +80,7 @@ public class AuthorizationInterceptorTest {
     @Test
     void successAuthorizationWithPreAuthorizeInMethodController() throws Exception {
         // given
-        when(authenticationContext.getAuthenticatedUserHolder()).thenReturn(authenticatedUserHolder);
+        authenticationContext.setAuthenticatedUserHolder(authenticatedUserHolder);
         method = PreAuthorizeInMethodController.class.getMethod("foo");
         handlerMethod = new HandlerMethod(preAuthorizeInMethodController, method);
         // when
@@ -95,7 +92,7 @@ public class AuthorizationInterceptorTest {
     @Test
     void successAuthorizationWithPreAuthorizeInClassController() throws Exception {
         // given
-        when(authenticationContext.getAuthenticatedUserHolder()).thenReturn(authenticatedUserHolder);
+        authenticationContext.setAuthenticatedUserHolder(authenticatedUserHolder);
         method = PreAuthorizeInClassController.class.getMethod("foo");
         handlerMethod = new HandlerMethod(preAuthorizeInClassController, method);
         // when
@@ -107,7 +104,7 @@ public class AuthorizationInterceptorTest {
     @Test
     void failAuthorizationWithPreAuthorizeInClassControllerWhenNotAuthenticated() throws Exception {
         // given
-        when(authenticationContext.getAuthenticatedUserHolder()).thenReturn(notAuthenticatedUserHolder);
+        authenticationContext.setAuthenticatedUserHolder(notAuthenticatedUserHolder);
         method = PreAuthorizeInClassController.class.getMethod("foo");
         handlerMethod = new HandlerMethod(preAuthorizeInClassController, method);
         // when
@@ -119,7 +116,7 @@ public class AuthorizationInterceptorTest {
     @Test
     void failAuthorizationWithPreAuthorizeInMethodControllerWhenNotAuthenticated() throws Exception {
         // given
-        when(authenticationContext.getAuthenticatedUserHolder()).thenReturn(notAuthenticatedUserHolder);
+        authenticationContext.setAuthenticatedUserHolder(notAuthenticatedUserHolder);
         method = PreAuthorizeInMethodController.class.getMethod("foo");
         handlerMethod = new HandlerMethod(preAuthorizeInMethodController, method);
         // when
