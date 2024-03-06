@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping(SignUpPath)
-    public ResponseEntity<SavedUserDto> signUp(UserFormDto userFormDto) {
+    public ResponseEntity<SavedUserDto> signUp(@RequestBody UserFormDto userFormDto) {
         User savedUser = userService.signUp(Optional.ofNullable(userFormDto));
         SavedUserDto savedUserDto = new SavedUserDto(savedUser.getEmail(), savedUser.getNickname());
         return new ResponseEntity<>(savedUserDto, HttpStatus.CREATED);
