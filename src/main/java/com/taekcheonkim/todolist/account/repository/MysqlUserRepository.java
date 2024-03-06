@@ -3,6 +3,7 @@ package com.taekcheonkim.todolist.account.repository;
 import com.taekcheonkim.todolist.account.domain.User;
 import com.taekcheonkim.todolist.account.util.PasswordEncoder;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -42,6 +43,8 @@ public class MysqlUserRepository implements UserRepository {
 
     @Override
     public boolean isExistByEmail(String email) {
-        return null;
+        Query query = entityManager.createQuery("SELECT u FROM User u WHERE EXISTS (SELECT 1 FROM User t WHERE t.email = :email)", User.class);
+        query.setParameter("email", email);
+        return query.getResultList().size() == 1;
     }
 }
