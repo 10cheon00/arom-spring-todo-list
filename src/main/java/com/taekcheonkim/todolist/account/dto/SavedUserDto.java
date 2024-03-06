@@ -29,4 +29,14 @@ public class SavedUserDto {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        SavedUserDto other = (SavedUserDto) o;
+        return email.equals(other.getEmail()) && nickname.equals(other.getNickname());
+    }
 }
