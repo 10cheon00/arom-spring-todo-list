@@ -13,6 +13,6 @@ public class SessionUserController extends UserController {
 
     @PostMapping("/signin")
     public void signIn(HttpServletResponse response, LoginDto loginDto) {
-        authenticationManager.authenticate()
+
     }
 }

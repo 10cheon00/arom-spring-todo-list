@@ -4,13 +4,13 @@ import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.account.domain.User;
 import com.taekcheonkim.todolist.account.dto.LoginDto;
-import com.taekcheonkim.todolist.account.dto.SavedUserDto;
 import com.taekcheonkim.todolist.account.dto.UserFormDto;
 import com.taekcheonkim.todolist.account.exception.InvalidLoginFormException;
 import com.taekcheonkim.todolist.account.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.util.Optional;
@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class SessionUserControllerTest {
-    private SessionUserController sessionUserController;
+    private final SessionUserController sessionUserController;
     @Mock
     private UserService userService;
     @Mock
@@ -34,7 +34,6 @@ public class SessionUserControllerTest {
     private final LoginDto loginDto;
     private final LoginDto invalidLoginDto;
     private final User savedUser;
-    private final SavedUserDto savedUserDto;
 
     private MockHttpServletResponse response;
 
@@ -46,14 +45,15 @@ public class SessionUserControllerTest {
         this.loginDto = new LoginDto(email, password);
         this.invalidLoginDto = new LoginDto(email, password);
         this.savedUser = new User(this.userFormDto);
-        this.savedUserDto = new SavedUserDto(email, nickname);
 
         this.authenticatedUserHolder = new AuthenticatedUserHolder(Optional.of(savedUser));
         this.notAuthenticatedUserHolder = new AuthenticatedUserHolder(Optional.empty());
+        this.sessionUserController = new SessionUserController(userService, authenticationManager);
     }
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         this.response = new MockHttpServletResponse();
     }
 
