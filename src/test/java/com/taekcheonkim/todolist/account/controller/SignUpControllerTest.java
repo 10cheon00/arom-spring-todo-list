@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +40,7 @@ public class SignUpControllerTest {
     @Test
     void successSignUp() {
         // given
-        when(userService.signUp(any(UserFormDto.class))).thenReturn(savedUser);
+        when(userService.signUp(any(Optional.class))).thenReturn(savedUser);
         // when
         User result = signUpController.signUp(userFormDto);
         // then
@@ -48,7 +50,7 @@ public class SignUpControllerTest {
     @Test
     void failSignUpByUserService() {
         // given
-        when(userService.signUp(any(UserFormDto.class))).thenThrow(new InvalidUserFormException(""));
+        when(userService.signUp(any(Optional.class))).thenThrow(new InvalidUserFormException(""));
         // when
         // then
         assertThatThrownBy(() -> {
@@ -59,7 +61,7 @@ public class SignUpControllerTest {
     @Test
     void failSignUpByInvalidLoginDto() {
         // given
-        when(userService.signUp(any(UserFormDto.class))).thenThrow(new InvalidUserFormException(""));
+        when(userService.signUp(any(Optional.class))).thenThrow(new InvalidUserFormException(""));
         // when
         // then
         assertThatThrownBy(() -> {

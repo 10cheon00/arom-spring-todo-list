@@ -41,7 +41,7 @@ public class UserServiceTest {
         // given
         when(userRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
         // when
-        User signInUser = userService.signUp(userFormDto);
+        User signInUser = userService.signUp(Optional.of(userFormDto));
         // then
         assertThat(signInUser.getEmail()).isEqualTo(userFormDto.getEmail());
     }
@@ -53,7 +53,7 @@ public class UserServiceTest {
         // when
         // then
         assertThatThrownBy(() -> {
-            userService.signUp(userFormDto);
+            userService.signUp(Optional.of(userFormDto));
         }).isInstanceOf(InvalidUserFormException.class);
     }
 
@@ -64,7 +64,7 @@ public class UserServiceTest {
         // when
         // then
         assertThatThrownBy(() -> {
-            userService.signUp(userFormDto);
+            userService.signUp(Optional.of(userFormDto));
         }).isInstanceOf(InvalidUserFormException.class);
     }
 }
