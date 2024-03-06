@@ -7,15 +7,16 @@ import com.taekcheonkim.todolist.account.dto.UserFormDto;
 import com.taekcheonkim.todolist.account.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/users")
+@RequestMapping(UserController.UriPath)
 public class UserController {
+    public final static String UriPath = "/users";
+    public final static String SignUpPath = "/signup";
+    public final static String SignInPath = "/signin";
+
     private final UserService userService;
     protected final AuthenticationManager authenticationManager;
 
@@ -24,7 +25,7 @@ public class UserController {
         this.authenticationManager = authenticationManager;
     }
 
-    @PostMapping("/signup")
+    @PostMapping(SignUpPath)
     public ResponseEntity<SavedUserDto> signUp(UserFormDto userFormDto) {
         User savedUser = userService.signUp(Optional.ofNullable(userFormDto));
         SavedUserDto savedUserDto = new SavedUserDto(savedUser.getEmail(), savedUser.getNickname());
