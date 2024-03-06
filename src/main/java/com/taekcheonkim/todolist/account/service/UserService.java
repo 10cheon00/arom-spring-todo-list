@@ -16,7 +16,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User signIn(UserFormDto userFormDto) {
+    public User signUp(UserFormDto userFormDto) {
         Optional<User> maybeUser = userRepository.findByEmail(userFormDto.getEmail());
         if (maybeUser.isPresent()) {
             throw new InvalidUserFormException("Already exists email.");
