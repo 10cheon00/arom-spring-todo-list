@@ -2,6 +2,7 @@ package com.taekcheonkim.todolist.account.filter;
 
 import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationContext;
+import com.taekcheonkim.todolist.account.authentication.SessionAttributes;
 import com.taekcheonkim.todolist.account.domain.User;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,8 +33,6 @@ public class SessionAuthenticationFilterTest {
     private MockHttpServletResponse response;
     private MockFilterChain filterChain;
     private MockHttpSession httpSession;
-    private String attributeKeyOfAuthenticated;
-    private String attributeKeyOfAuthenticatedUserHolder;
 
     private AuthenticationContext authenticationContext;
     private final AuthenticatedUserHolder authenticatedUserHolder;
@@ -58,16 +57,13 @@ public class SessionAuthenticationFilterTest {
         request.setSession(httpSession);
         response = new MockHttpServletResponse();
         filterChain = new MockFilterChain();
-
-        attributeKeyOfAuthenticated = sessionAuthenticationFilter.getAttributeKeyOfAuthenticate();
-        attributeKeyOfAuthenticatedUserHolder = sessionAuthenticationFilter.getAttributeKeyOfAuthenticatedUserHolder();
     }
 
     @Test
     void successAuthentication() throws ServletException, IOException {
         // given
-        httpSession.setAttribute(attributeKeyOfAuthenticated, true);
-        httpSession.setAttribute(attributeKeyOfAuthenticatedUserHolder, authenticatedUserHolder);
+        httpSession.setAttribute(SessionAttributes.Authenticated, true);
+        httpSession.setAttribute(SessionAttributes.AuthenticatedUserHolder, authenticatedUserHolder);
         // when
         sessionAuthenticationFilter.doFilterInternal(request, response, filterChain);
         // then
@@ -77,8 +73,8 @@ public class SessionAuthenticationFilterTest {
     @Test
     void failAuthenticationWhenAuthenticatedAttributeIsNull() throws ServletException, IOException {
         // given
-        httpSession.setAttribute(attributeKeyOfAuthenticated, null);
-        httpSession.setAttribute(attributeKeyOfAuthenticatedUserHolder, notAuthenticatedUserHolder);
+        httpSession.setAttribute(SessionAttributes.Authenticated, null);
+        httpSession.setAttribute(SessionAttributes.AuthenticatedUserHolder, notAuthenticatedUserHolder);
         // when
         sessionAuthenticationFilter.doFilterInternal(request, response, filterChain);
         // then
@@ -88,8 +84,8 @@ public class SessionAuthenticationFilterTest {
     @Test
     void failAuthenticationWhenAuthenticatedAttributeIsFalse() throws ServletException, IOException {
         // given
-        httpSession.setAttribute(attributeKeyOfAuthenticated, false);
-        httpSession.setAttribute(attributeKeyOfAuthenticatedUserHolder, notAuthenticatedUserHolder);
+        httpSession.setAttribute(SessionAttributes.Authenticated, false);
+        httpSession.setAttribute(SessionAttributes.AuthenticatedUserHolder, notAuthenticatedUserHolder);
         // when
         sessionAuthenticationFilter.doFilterInternal(request, response, filterChain);
         // then
