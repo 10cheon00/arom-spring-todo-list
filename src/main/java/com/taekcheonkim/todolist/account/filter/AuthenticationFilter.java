@@ -1,9 +1,7 @@
 package com.taekcheonkim.todolist.account.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationContext;
-import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.account.dto.LoginDto;
 import com.taekcheonkim.todolist.account.util.MultipleReadableHttpServletRequestWrapper;
 import jakarta.servlet.FilterChain;
@@ -16,42 +14,21 @@ import java.io.IOException;
 import java.util.Optional;
 
 public abstract class AuthenticationFilter extends OncePerRequestFilter {
-    private final AuthenticationManager authenticationManager;
     protected final AuthenticationContext authenticationContext;
     protected Optional<LoginDto> maybeLoginDto;
-    protected AuthenticatedUserHolder authenticatedUserHolder;
     protected MultipleReadableHttpServletRequestWrapper requestWrapper;
 
-    protected AuthenticationFilter(AuthenticationManager authenticationManager, AuthenticationContext authenticationContext) {
-        this.authenticationManager = authenticationManager;
+    protected AuthenticationFilter(AuthenticationContext authenticationContext) {
         this.authenticationContext = authenticationContext;
     }
 
     @Override
     protected final void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        wrapRequestToMultipleReadableHttpServletRequestWrapper(request);
-
-        if (canPassAuthentication()) {
-            passAuthentication();
-        } else {
-            getLoginDtoFromRequest();
-            authenticate();
-            updateAuthenticationContext();
-        }
-        filterChain.doFilter(requestWrapper, response);
+        updateAuthenticationContext(request);
+        filterChain.doFilter(request, response);
     }
 
-    protected void wrapRequestToMultipleReadableHttpServletRequestWrapper(HttpServletRequest request) {
-        this.requestWrapper = new MultipleReadableHttpServletRequestWrapper(request);
-    }
-
-    protected boolean canPassAuthentication() {
-        return false;
-    }
-
-    protected void passAuthentication() {
-    }
-
+    // todo: 나중에 이 코드 컨트롤러에서 쓰기
     protected final void getLoginDtoFromRequest() {
         try {
             byte[] body = requestWrapper.getInputStream().readAllBytes();
@@ -63,24 +40,5 @@ public abstract class AuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    protected final void authenticate() {
-        authenticatedUserHolder = authenticationManager.authenticate(maybeLoginDto);
-    }
-
-    protected final void updateAuthenticationContext() {
-        authenticationContext.setAuthenticatedUserHolder(authenticatedUserHolder);
-        if (authenticatedUserHolder.isAuthenticated()) {
-            afterSuccessAuthentication();
-        } else {
-            afterFailAuthentication();
-        }
-    }
-
-    protected abstract void afterSuccessAuthentication();
-
-    protected abstract void afterFailAuthentication();
-
-    protected MultipleReadableHttpServletRequestWrapper getRequestWrapper() {
-        return this.requestWrapper;
-    }
+    protected abstract void updateAuthenticationContext(HttpServletRequest request);
 }

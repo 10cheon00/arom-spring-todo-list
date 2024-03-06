@@ -2,10 +2,12 @@ package com.taekcheonkim.todolist.account.filter;
 
 import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationContext;
-import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class SessionAuthenticationFilter extends AuthenticationFilter {
@@ -13,42 +15,27 @@ public class SessionAuthenticationFilter extends AuthenticationFilter {
     private final String attributeKeyOfAuthenticatedUserHolder;
 
     @Autowired
-    public SessionAuthenticationFilter(AuthenticationManager authenticationManager, AuthenticationContext authenticationContext) {
-        super(authenticationManager, authenticationContext);
+    public SessionAuthenticationFilter(AuthenticationContext authenticationContext) {
+        super(authenticationContext);
         this.attributeKeyOfAuthenticated = "authentication";
         this.attributeKeyOfAuthenticatedUserHolder = "authenticatedUserHolder";
     }
 
     @Override
-    protected boolean canPassAuthentication() {
-        return isSessionAttributeTrue();
+    protected void updateAuthenticationContext(HttpServletRequest request) {
+        if (isNotAuthenticated(request)) {
+            HttpSession httpSession = request.getSession();
+            httpSession.setAttribute(attributeKeyOfAuthenticated, false);
+            httpSession.setAttribute(attributeKeyOfAuthenticatedUserHolder, new AuthenticatedUserHolder(Optional.empty()));
+        }
+        Object result = request.getSession().getAttribute(attributeKeyOfAuthenticatedUserHolder);
+        authenticationContext.setAuthenticatedUserHolder((AuthenticatedUserHolder) result);
     }
 
-    @Override
-    protected void passAuthentication() {
-        HttpSession httpSession = getRequestWrapper().getSession();
-        AuthenticatedUserHolder userHolder = (AuthenticatedUserHolder) httpSession.getAttribute(attributeKeyOfAuthenticatedUserHolder);
-        authenticationContext.setAuthenticatedUserHolder(userHolder);
-    }
-
-    @Override
-    protected void afterSuccessAuthentication() {
-        HttpSession httpSession = getRequestWrapper().getSession();
-        httpSession.setAttribute(attributeKeyOfAuthenticated, true);
-        httpSession.setAttribute(attributeKeyOfAuthenticatedUserHolder, authenticatedUserHolder);
-    }
-
-    @Override
-    protected void afterFailAuthentication() {
-        HttpSession httpSession = getRequestWrapper().getSession();
-        httpSession.setAttribute(attributeKeyOfAuthenticated, false);
-        httpSession.setAttribute(attributeKeyOfAuthenticatedUserHolder, null);
-    }
-
-    private boolean isSessionAttributeTrue() {
-        HttpSession httpSession = getRequestWrapper().getSession();
+    private boolean isNotAuthenticated(HttpServletRequest request) {
+        HttpSession httpSession = request.getSession();
         Object sessionAttribute = httpSession.getAttribute(attributeKeyOfAuthenticated);
-        return sessionAttribute != null && (boolean) sessionAttribute;
+        return sessionAttribute == null || !(boolean) sessionAttribute;
     }
 
     public String getAttributeKeyOfAuthenticate() {
