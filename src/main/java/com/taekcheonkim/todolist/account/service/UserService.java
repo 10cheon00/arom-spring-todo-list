@@ -4,11 +4,13 @@ import com.taekcheonkim.todolist.account.domain.User;
 import com.taekcheonkim.todolist.account.dto.UserFormDto;
 import com.taekcheonkim.todolist.account.exception.InvalidUserFormException;
 import com.taekcheonkim.todolist.account.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UserService {
     private final UserRepository userRepository;
 
