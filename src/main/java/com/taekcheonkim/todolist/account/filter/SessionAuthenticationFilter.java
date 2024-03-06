@@ -10,10 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Component
 public class SessionAuthenticationFilter extends AuthenticationFilter {
-
-    @Autowired
     public SessionAuthenticationFilter(AuthenticationContext authenticationContext) {
         super(authenticationContext);
     }
