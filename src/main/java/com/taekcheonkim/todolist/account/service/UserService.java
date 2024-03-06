@@ -22,9 +22,9 @@ public class UserService {
         if (maybeUserFormDto.isEmpty()) {
             throw new InvalidUserFormException("User form is empty.");
         }
+
         UserFormDto userFormDto = maybeUserFormDto.get();
-        Optional<User> maybeUser = userRepository.findByEmail(userFormDto.getEmail());
-        if (maybeUser.isPresent()) {
+        if (userRepository.isExistByEmail(userFormDto.getEmail())) {
             throw new InvalidUserFormException("Already exists email.");
         }
 
