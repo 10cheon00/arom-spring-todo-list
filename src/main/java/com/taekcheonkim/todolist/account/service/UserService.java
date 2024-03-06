@@ -18,7 +18,7 @@ public class UserService {
 
     public User signUp(Optional<UserFormDto> maybeUserFormDto) throws InvalidUserFormException {
         if (maybeUserFormDto.isEmpty()) {
-            throw new InvalidUserFormException("Already exists email.");
+            throw new InvalidUserFormException("User form is empty.");
         }
         UserFormDto userFormDto = maybeUserFormDto.get();
         Optional<User> maybeUser = userRepository.findByEmail(userFormDto.getEmail());

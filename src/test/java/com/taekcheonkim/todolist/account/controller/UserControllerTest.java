@@ -1,7 +1,5 @@
 package com.taekcheonkim.todolist.account.controller;
 
-import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
-import com.taekcheonkim.todolist.account.authentication.AuthenticationContext;
 import com.taekcheonkim.todolist.account.domain.User;
 import com.taekcheonkim.todolist.account.dto.SavedUserDto;
 import com.taekcheonkim.todolist.account.dto.UserFormDto;
@@ -20,8 +18,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-public class SignUpControllerTest {
-    private SignUpController signUpController;
+public class UserControllerTest {
+    private UserController userController;
     @Mock
     private UserService userService;
 
@@ -29,7 +27,7 @@ public class SignUpControllerTest {
     private final User savedUser;
     private final SavedUserDto savedUserDto;
 
-    public SignUpControllerTest() {
+    public UserControllerTest() {
         String email = "email@test.com";
         String password = "password";
         String nickname = "nickname";
@@ -41,7 +39,7 @@ public class SignUpControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        this.signUpController = new SignUpController(userService);
+        this.userController = new UserController(userService);
     }
 
     @Test
@@ -49,7 +47,7 @@ public class SignUpControllerTest {
         // given
         when(userService.signUp(any(Optional.class))).thenReturn(savedUser);
         // when
-        ResponseEntity<SavedUserDto> response = signUpController.signUp(userFormDto);
+        ResponseEntity<SavedUserDto> response = userController.signUp(userFormDto);
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(savedUserDto);
@@ -60,9 +58,8 @@ public class SignUpControllerTest {
         // given
         when(userService.signUp(any(Optional.class))).thenThrow(new InvalidUserFormException(""));
         // when
-        ResponseEntity<SavedUserDto> response = signUpController.signUp(userFormDto);
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThatThrownBy(() -> userController.signUp(userFormDto)).isInstanceOf(InvalidUserFormException.class);
     }
 
     @Test
@@ -70,8 +67,7 @@ public class SignUpControllerTest {
         // given
         when(userService.signUp(any(Optional.class))).thenThrow(new InvalidUserFormException(""));
         // when
-        ResponseEntity<SavedUserDto> response = signUpController.signUp(null);
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThatThrownBy(() -> userController.signUp(null)).isInstanceOf(InvalidUserFormException.class);
     }
 }

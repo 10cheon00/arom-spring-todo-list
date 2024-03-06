@@ -14,10 +14,10 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/users")
-public class SignUpController {
+public class UserController {
     private final UserService userService;
 
-    public SignUpController(UserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -25,6 +25,6 @@ public class SignUpController {
     public ResponseEntity<SavedUserDto> signUp(UserFormDto userFormDto) {
         User savedUser = userService.signUp(Optional.ofNullable(userFormDto));
         SavedUserDto savedUserDto = new SavedUserDto(savedUser.getEmail(), savedUser.getNickname());
-        return new ResponseEntity<SavedUserDto>(savedUserDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedUserDto, HttpStatus.CREATED);
     }
 }
