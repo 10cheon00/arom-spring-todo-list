@@ -9,4 +9,5 @@ public interface UserRepository {
     void save(User user);
     List<User> findAll();
     Optional<User> findByEmail(String email);
+    boolean isExistByEmail(String email);
 }

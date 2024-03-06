@@ -62,4 +62,25 @@ public class UserRepositoryTest {
         // then
         assertThat(result.size()).isEqualTo(2);
     }
+
+    @Test
+    void checkExistenceUserByEmail() {
+        // given
+        User user = this.generateUser();
+        // when
+        userRepository.save(user);
+        boolean existence = userRepository.isExistByEmail(user.getEmail());
+        // then
+        assertThat(existence).isTrue();
+    }
+
+    @Test
+    void checkNonExistenceUserByEmail() {
+        // given
+        User nonExistUser = this.generateUser();
+        // when
+        boolean existence = userRepository.isExistByEmail(nonExistUser.getEmail());
+        // then
+        assertThat(existence).isFalse();
+    }
 }

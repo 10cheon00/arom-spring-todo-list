@@ -39,4 +39,9 @@ public class MysqlUserRepository implements UserRepository {
         query.setParameter("email", email);
         return Optional.ofNullable(query.getSingleResult());
     }
+
+    @Override
+    public boolean isExistByEmail(String email) {
+        return null;
+    }
 }
