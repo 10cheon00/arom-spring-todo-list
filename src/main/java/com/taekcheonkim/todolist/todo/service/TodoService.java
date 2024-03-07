@@ -84,7 +84,7 @@ public class TodoService {
 
         if (todoRepository.isExistById(updateTodoFormDto.getId())) {
             Todo updateTodo = todoRepository.findById(updateTodoFormDto.getId());
-            if (updateTodo.getAuthor() != getCurrentUser()) {
+            if (!updateTodo.getAuthor().equals(getCurrentUser())) {
                 throw new InvalidTodoFormDtoException("Can not update todo which is not yours.");
             }
             updateTodo.setTitle(updateTodoFormDto.getTitle());
@@ -107,7 +107,7 @@ public class TodoService {
         Long todoId = maybeTodoId.get();
         if (todoRepository.isExistById(todoId)) {
             Todo deleteTodo = todoRepository.findById(todoId);
-            if (deleteTodo.getAuthor() != getCurrentUser()) {
+            if (!deleteTodo.getAuthor().equals(getCurrentUser())) {
                 throw new InvalidTodoFormDtoException("Can not delete todo which is not yours.");
             }
             todoRepository.delete(deleteTodo);

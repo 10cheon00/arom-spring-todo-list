@@ -5,6 +5,7 @@ import com.taekcheonkim.todolist.todo.dto.TodoFormDto;
 import com.taekcheonkim.todolist.todo.service.TodoService;
 import com.taekcheonkim.todolist.user.authorization.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class TodoController {
     }
 
     @DeleteMapping("")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTodo(@RequestBody Long id) {
         todoService.deleteById(Optional.ofNullable(id));
     }
