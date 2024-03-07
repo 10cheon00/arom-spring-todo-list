@@ -21,7 +21,7 @@ public class PasswordEncoder {
             SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(secretKeySpec);
-            return convertByteToHexString(mac.doFinal());
+            return convertByteToHexString(mac.doFinal(password.getBytes()));
         } catch (NoSuchAlgorithmException e) {
             System.out.println("No such algorithm. This will caused from no encode algorithm in MessageDigest.");
             throw new RuntimeException(e);
