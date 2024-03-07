@@ -1,5 +1,7 @@
 package com.taekcheonkim.todolist.todo.domain;
 
+import com.taekcheonkim.todolist.todo.dto.TodoFormDto;
+import com.taekcheonkim.todolist.user.domain.User;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -18,6 +20,8 @@ public class Todo {
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
     private Date startDate;
     private Date endDate;
+    @ManyToOne(targetEntity = User.class)
+    private User author;
 
     public Todo() {
         this.isDone = false;
@@ -30,6 +34,14 @@ public class Todo {
         this();
         this.title = title;
         this.description = description;
+    }
+
+    public Todo(TodoFormDto todoFormDto) {
+        this.title = todoFormDto.getTitle();
+        this.description = todoFormDto.getDescription();
+        this.startDate = todoFormDto.getStartDate();
+        this.endDate = todoFormDto.getEndDate();
+        this.isDone = todoFormDto.isDone();
     }
 
     public void setId(Long id) {
@@ -78,5 +90,13 @@ public class Todo {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public User getAuthor() {
+        return this.author;
     }
 }

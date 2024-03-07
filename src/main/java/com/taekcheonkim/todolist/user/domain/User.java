@@ -3,6 +3,8 @@ package com.taekcheonkim.todolist.user.domain;
 import com.taekcheonkim.todolist.user.dto.SignUpFormDto;
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 public class User {
     @Id
@@ -51,5 +53,18 @@ public class User {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(nickname, user.nickname);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, password, nickname);
     }
 }

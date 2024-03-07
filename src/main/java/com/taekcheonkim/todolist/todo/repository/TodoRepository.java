@@ -5,7 +5,7 @@ import com.taekcheonkim.todolist.todo.domain.Todo;
 import java.util.List;
 
 public interface TodoRepository {
-    void save(Todo todo);
+    Long save(Todo todo);
     List<Todo> findAll();
     Todo findById(Long id);
     boolean isExistById(Long id);

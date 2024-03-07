@@ -2,6 +2,7 @@ package com.taekcheonkim.todolist.todo.repository;
 
 import com.taekcheonkim.todolist.todo.domain.Todo;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -18,8 +19,10 @@ public class MysqlTodoRepository implements TodoRepository {
     }
 
     @Override
-    public void save(Todo todo) {
+    public Long save(Todo todo) {
         entityManager.persist(todo);
+        entityManager.flush();
+        return todo.getId();
     }
 
     @Override
@@ -36,7 +39,9 @@ public class MysqlTodoRepository implements TodoRepository {
 
     @Override
     public boolean isExistById(Long id) {
-        return false;
+        Query query = entityManager.createQuery("SELECT t FROM Todo t WHERE EXISTS (SELECT 1 FROM User t WHERE t.id = :id)", Todo.class);
+        query.setParameter("id", id);
+        return query.getResultList().size() == 1;
     }
 
     @Override

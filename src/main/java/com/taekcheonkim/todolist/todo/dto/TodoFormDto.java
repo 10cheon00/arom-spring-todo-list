@@ -15,7 +15,7 @@ public class TodoFormDto {
     }
 
     public TodoFormDto(String title, String description) {
-        this("", "", null);
+        this(title, description, null);
     }
 
     public TodoFormDto(String title, String description, Date endDate) {
