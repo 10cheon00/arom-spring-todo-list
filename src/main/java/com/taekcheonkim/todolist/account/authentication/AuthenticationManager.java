@@ -20,8 +20,10 @@ public class AuthenticationManager {
     public AuthenticatedUserHolder authenticate(Optional<LoginDto> maybeLoginDto) {
         if(maybeLoginDto.isPresent()) {
             LoginDto loginDto = maybeLoginDto.get();
-            Optional<User> maybeUser = userRepository.findByEmail(loginDto.getEmail());
-            return new AuthenticatedUserHolder(maybeUser);
+            if (userRepository.isExistByEmail(loginDto.getEmail())) {
+                Optional<User> maybeUser = userRepository.findByEmail(loginDto.getEmail());
+                return new AuthenticatedUserHolder(maybeUser);
+            }
         }
         return new AuthenticatedUserHolder(Optional.empty());
     }
