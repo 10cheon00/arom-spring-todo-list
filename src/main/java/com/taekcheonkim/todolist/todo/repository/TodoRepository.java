@@ -7,6 +7,7 @@ import java.util.List;
 public interface TodoRepository {
     Long save(Todo todo);
     List<Todo> findAll();
+    List<Todo> findByUserEmail(String email);
     Todo findById(Long id);
     boolean isExistById(Long id);
     void update(Todo todo);

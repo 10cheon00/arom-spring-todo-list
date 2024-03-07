@@ -1,6 +1,7 @@
 package com.taekcheonkim.todolist.user.authorization;
 
 import com.taekcheonkim.todolist.user.authentication.AuthenticationContext;
+import com.taekcheonkim.todolist.user.exception.AccessDeniedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.context.annotation.RequestScope;
@@ -21,8 +22,8 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         findPreAuthorizeAnnotationInHandler(handler);
-        if (hasPreAuthorizeAnnotation) {
-            return authenticationContext.getAuthenticatedUserHolder().isAuthenticated();
+        if (hasPreAuthorizeAnnotation && !authenticationContext.getAuthenticatedUserHolder().isAuthenticated()) {
+            throw new AccessDeniedException();
         }
         return true;
     }

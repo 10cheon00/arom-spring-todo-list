@@ -6,6 +6,7 @@ import com.taekcheonkim.todolist.todo.exception.InvalidTodoFormDtoException;
 import com.taekcheonkim.todolist.todo.repository.TodoRepository;
 import com.taekcheonkim.todolist.user.authentication.AuthenticationContext;
 import com.taekcheonkim.todolist.user.domain.User;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class TodoService {
     private final TodoRepository todoRepository;
     private final AuthenticationContext authenticationContext;
@@ -42,7 +44,7 @@ public class TodoService {
             throw new InvalidTodoFormDtoException("Description is empty.");
         }
         Todo todo = new Todo(todoFormDto);
-        todo.setAuthor(getAuthor());
+        todo.setAuthor(getCurrentUser());
         Long id = todoRepository.save(todo);
         todo.setId(id);
         return todo;
@@ -50,6 +52,11 @@ public class TodoService {
 
     public List<Todo> findAll() {
         return todoRepository.findAll();
+    }
+
+    public List<Todo> findByCurrentUser() {
+        String email = getCurrentUser().getEmail();
+        return todoRepository.findByUserEmail(email);
     }
 
     public Todo findById(Optional<Long> maybeTodoId) {
@@ -63,7 +70,7 @@ public class TodoService {
         return todoRepository.findById(todoId);
     }
 
-    public Todo update(Optional<TodoFormDto> maybeUpdateTodoForm) {
+    public Todo updateTodo(Optional<TodoFormDto> maybeUpdateTodoForm) {
         if (maybeUpdateTodoForm.isEmpty()) {
             throw new InvalidTodoFormDtoException("Request with wrong form.");
         }
@@ -77,7 +84,7 @@ public class TodoService {
 
         if (todoRepository.isExistById(updateTodoFormDto.getId())) {
             Todo updateTodo = todoRepository.findById(updateTodoFormDto.getId());
-            if (updateTodo.getAuthor() != getAuthor()) {
+            if (updateTodo.getAuthor() != getCurrentUser()) {
                 throw new InvalidTodoFormDtoException("Can not update todo which is not yours.");
             }
             updateTodo.setTitle(updateTodoFormDto.getTitle());
@@ -100,7 +107,7 @@ public class TodoService {
         Long todoId = maybeTodoId.get();
         if (todoRepository.isExistById(todoId)) {
             Todo deleteTodo = todoRepository.findById(todoId);
-            if (deleteTodo.getAuthor() != getAuthor()) {
+            if (deleteTodo.getAuthor() != getCurrentUser()) {
                 throw new InvalidTodoFormDtoException("Can not delete todo which is not yours.");
             }
             todoRepository.delete(deleteTodo);
@@ -110,8 +117,7 @@ public class TodoService {
         }
     }
 
-
-    private User getAuthor() {
+    private User getCurrentUser() {
         return authenticationContext.getAuthenticatedUserHolder().getAuthenticatedUser().get();
     }
 }

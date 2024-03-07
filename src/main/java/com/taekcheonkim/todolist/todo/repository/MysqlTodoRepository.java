@@ -31,6 +31,13 @@ public class MysqlTodoRepository implements TodoRepository {
     }
 
     @Override
+    public List<Todo> findByUserEmail(String email) {
+        TypedQuery<Todo> query = entityManager.createQuery("SELECT t FROM Todo t WHERE t.author.email = :email", Todo.class);
+        query.setParameter("email", email);
+        return query.getResultList();
+    }
+
+    @Override
     public Todo findById(Long id) {
         TypedQuery<Todo> query = entityManager.createQuery("SELECT t FROM Todo t WHERE t.id = :id", Todo.class);
         query.setParameter("id", id);

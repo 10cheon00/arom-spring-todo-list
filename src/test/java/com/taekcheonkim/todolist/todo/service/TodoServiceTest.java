@@ -124,7 +124,7 @@ public class TodoServiceTest {
         when(todoRepository.findById(any(Long.class))).thenReturn(savedTodo);
         // when
         assertThatNoException().isThrownBy(() -> {
-            Todo updatedResult = todoService.update(Optional.of(updateTodoForm));
+            Todo updatedResult = todoService.updateTodo(Optional.of(updateTodoForm));
             // then
             assertThat(updatedResult.getTitle()).isEqualTo(updateTodoForm.getTitle());
         });
@@ -142,10 +142,10 @@ public class TodoServiceTest {
         invalidUpdateTodoForm2.setId(savedTodoId);
         // then
         assertThatThrownBy(() -> {
-            todoService.update(Optional.of(invalidUpdateTodoForm1));
+            todoService.updateTodo(Optional.of(invalidUpdateTodoForm1));
         }).isInstanceOf(InvalidTodoFormDtoException.class);
         assertThatThrownBy(() -> {
-            todoService.update(Optional.of(invalidUpdateTodoForm2));
+            todoService.updateTodo(Optional.of(invalidUpdateTodoForm2));
         }).isInstanceOf(InvalidTodoFormDtoException.class);
     }
 

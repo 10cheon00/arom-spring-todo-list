@@ -15,9 +15,9 @@ public class Todo {
     private String title;
     @Column(nullable = false)
     private String description;
-    @Column(columnDefinition = "BIT(1) DEFAULT b'1'", nullable = false)
+    @Column(columnDefinition = "BIT(1) DEFAULT b'1'")
     private boolean isDone;
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date startDate;
     private Date endDate;
     @ManyToOne(targetEntity = User.class)

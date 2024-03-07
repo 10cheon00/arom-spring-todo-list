@@ -6,7 +6,7 @@ import com.taekcheonkim.todolist.user.controller.SessionUserController;
 import com.taekcheonkim.todolist.user.dto.SignInFormDto;
 import com.taekcheonkim.todolist.user.dto.SavedUserDto;
 import com.taekcheonkim.todolist.user.dto.SignUpFormDto;
-import com.taekcheonkim.todolist.user.exception.UserExceptionHandler;
+import com.taekcheonkim.todolist.ExceptionHandler;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,7 +68,7 @@ public class SessionUserMvcTest {
     void setUp() {
         this.mockMvc = MockMvcBuilders
                 .standaloneSetup(sessionUserController)
-                .setControllerAdvice(new UserExceptionHandler())
+                .setControllerAdvice(new ExceptionHandler())
                 .build();
     }
 

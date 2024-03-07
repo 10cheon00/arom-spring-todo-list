@@ -10,6 +10,10 @@ public class TodoFormDto {
     private Date endDate;
     private Date startDate;
 
+    public TodoFormDto() {
+        this("", "");
+    }
+
     public TodoFormDto(Long savedTodoId, String title, String newDescription, Boolean o, Object startDate, Object endDate) {
         this("", "");
     }
