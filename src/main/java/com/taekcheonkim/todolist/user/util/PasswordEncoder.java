@@ -34,7 +34,7 @@ public class PasswordEncoder {
     private String convertByteToHexString(byte[] bytes) {
         StringBuilder stringBuilder = new StringBuilder();
         for(byte b : bytes) {
-            stringBuilder.append(String.format("%02X", b));
+            stringBuilder.append(String.format("%02x", b));
         }
         return stringBuilder.toString();
     }

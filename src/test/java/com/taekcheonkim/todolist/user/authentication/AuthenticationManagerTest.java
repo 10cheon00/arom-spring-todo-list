@@ -7,7 +7,7 @@ import com.taekcheonkim.todolist.user.util.PasswordEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 
 import java.util.Optional;
 
@@ -36,31 +36,34 @@ public class AuthenticationManagerTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private UserRepository userRepository;
-    private SignInFormDto signInFormDto;
-    private final User user;
-    private final String email;
-    private final String password;
+    private final SignInFormDto signInFormDto;
+    private final User savedUser;
+    private final String testSecretKey;
 
     public AuthenticationManagerTest() {
-        email = "user1@test.com";
-        password = "password";
-        user = new User(email, password, "");
+        String email = "user1@test.com";
+        String password = "password";
+        this.signInFormDto = new SignInFormDto(email, password);
+
+        // this password is pre-encoded by external site.
+        String encodedPassword = "735d44e02bd777f5e6f8e8bd0efc7a4b0f874e62c3c84733d6d929164305fe49";
+        this.savedUser = new User(email, encodedPassword, "");
+        this.testSecretKey = "testSecretKey";
     }
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        userRepository = Mockito.mock(UserRepository.class);
+        passwordEncoder = Mockito.mock(PasswordEncoder.class, withSettings().useConstructor(testSecretKey));
         authenticationManager = new AuthenticationManager(userRepository, passwordEncoder);
-        signInFormDto = new SignInFormDto(email, password);
     }
 
     @Test
     void retrieveNotEmptyAuthenticatedUserHolderIfAuthenticateWithSignUpFormDto() {
         // given
-        String encodedKey = "this is encoded key which manipulated for test";
         when(userRepository.isExistByEmail(any(String.class))).thenReturn(true);
-        when(userRepository.findByEmail(signInFormDto.getEmail())).thenReturn(Optional.of(user));
-        when(passwordEncoder.encode(any(String.class))).thenReturn(encodedKey);
+        when(userRepository.findByEmail(any(String.class))).thenReturn(savedUser);
+        when(passwordEncoder.encode(any(String.class))).thenCallRealMethod();
         // when
         AuthenticatedUserHolder authenticatedUserHolder = authenticationManager.authenticate(Optional.of(signInFormDto));
         // then

@@ -25,7 +25,10 @@ public class AuthenticationManager {
             SignInFormDto signInFormDto = maybeSignInFormDto.get();
             if (userRepository.isExistByEmail(signInFormDto.getEmail())) {
                 User user = userRepository.findByEmail(signInFormDto.getEmail());
-                return new AuthenticatedUserHolder(Optional.of(user));
+                String encodedPassword = passwordEncoder.encode(signInFormDto.getPassword());
+                if (encodedPassword.equals(user.getPassword())) {
+                    return new AuthenticatedUserHolder(Optional.of(user));
+                }
             }
         }
         return new AuthenticatedUserHolder(Optional.empty());
