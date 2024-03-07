@@ -6,7 +6,7 @@ import com.taekcheonkim.todolist.user.authentication.SessionAttributes;
 import com.taekcheonkim.todolist.user.domain.User;
 import com.taekcheonkim.todolist.user.dto.SignInFormDto;
 import com.taekcheonkim.todolist.user.dto.SignUpFormDto;
-import com.taekcheonkim.todolist.user.exception.InvalidLoginFormException;
+import com.taekcheonkim.todolist.user.exception.InvalidSignUpFormException;
 import com.taekcheonkim.todolist.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,7 +87,7 @@ public class SessionUserControllerTest {
         when(authenticationManager.authenticate(any(Optional.class))).thenReturn(notAuthenticatedUserHolder);
         // when
         // then
-        assertThatThrownBy(() -> sessionUserController.signIn(invalidSignInFormDto, request, response)).isInstanceOf(InvalidLoginFormException.class);
+        assertThatThrownBy(() -> sessionUserController.signIn(invalidSignInFormDto, request, response)).isInstanceOf(InvalidSignUpFormException.class);
     }
 
     @Test
@@ -96,6 +96,6 @@ public class SessionUserControllerTest {
         when(authenticationManager.authenticate(any(Optional.class))).thenReturn(notAuthenticatedUserHolder);
         // when
         // then
-        assertThatThrownBy(() -> sessionUserController.signIn(null, request, response)).isInstanceOf(InvalidLoginFormException.class);
+        assertThatThrownBy(() -> sessionUserController.signIn(null, request, response)).isInstanceOf(InvalidSignUpFormException.class);
     }
 }

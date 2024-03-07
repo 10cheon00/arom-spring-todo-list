@@ -6,7 +6,7 @@ import com.taekcheonkim.todolist.user.domain.User;
 import com.taekcheonkim.todolist.user.dto.SignInFormDto;
 import com.taekcheonkim.todolist.user.dto.SavedUserDto;
 import com.taekcheonkim.todolist.user.dto.SignUpFormDto;
-import com.taekcheonkim.todolist.user.exception.InvalidUserFormException;
+import com.taekcheonkim.todolist.user.exception.InvalidSignInFormException;
 import com.taekcheonkim.todolist.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,18 +70,18 @@ public class UserControllerTest {
     @Test
     void failSignUpByUserService() {
         // given
-        when(userService.signUp(any(Optional.class))).thenThrow(new InvalidUserFormException(""));
+        when(userService.signUp(any(Optional.class))).thenThrow(new InvalidSignInFormException(""));
         // when
         // then
-        assertThatThrownBy(() -> userController.signUp(signUpFormDto)).isInstanceOf(InvalidUserFormException.class);
+        assertThatThrownBy(() -> userController.signUp(signUpFormDto)).isInstanceOf(InvalidSignInFormException.class);
     }
 
     @Test
     void failSignUpByInvalidSignUpFormDto() {
         // given
-        when(userService.signUp(any(Optional.class))).thenThrow(new InvalidUserFormException(""));
+        when(userService.signUp(any(Optional.class))).thenThrow(new InvalidSignInFormException(""));
         // when
         // then
-        assertThatThrownBy(() -> userController.signUp(null)).isInstanceOf(InvalidUserFormException.class);
+        assertThatThrownBy(() -> userController.signUp(null)).isInstanceOf(InvalidSignInFormException.class);
     }
 }

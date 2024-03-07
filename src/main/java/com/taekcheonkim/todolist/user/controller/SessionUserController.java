@@ -3,7 +3,7 @@ package com.taekcheonkim.todolist.user.controller;
 import com.taekcheonkim.todolist.user.authentication.AuthenticatedUserHolder;
 import com.taekcheonkim.todolist.user.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.user.dto.SignInFormDto;
-import com.taekcheonkim.todolist.user.exception.InvalidLoginFormException;
+import com.taekcheonkim.todolist.user.exception.InvalidSignUpFormException;
 import com.taekcheonkim.todolist.user.authentication.SessionAttributes;
 import com.taekcheonkim.todolist.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +34,7 @@ public class SessionUserController extends UserController {
             httpSession.setAttribute(SessionAttributes.AuthenticatedUserHolder, authenticatedUserHolder);
             response.sendRedirect("/");
         } else {
-            throw new InvalidLoginFormException();
+            throw new InvalidSignUpFormException();
         }
     }
 }

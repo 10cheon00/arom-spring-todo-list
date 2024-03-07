@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class UserExceptionHandler {
-    @ExceptionHandler({InvalidUserFormException.class})
-    public ResponseEntity<Object> handle(InvalidUserFormException e) {
+    @ExceptionHandler({InvalidSignInFormException.class})
+    public ResponseEntity<Object> handle(InvalidSignInFormException e) {
         ErrorMessageDto errorMessageDto = new ErrorMessageDto(e.getMessage());
         return new ResponseEntity<>(errorMessageDto, HttpStatus.BAD_REQUEST);
     }
