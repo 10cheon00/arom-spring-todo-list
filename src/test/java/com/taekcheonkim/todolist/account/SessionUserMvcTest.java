@@ -3,6 +3,7 @@ package com.taekcheonkim.todolist.account;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taekcheonkim.todolist.account.controller.SessionUserController;
+import com.taekcheonkim.todolist.account.dto.LoginDto;
 import com.taekcheonkim.todolist.account.dto.SavedUserDto;
 import com.taekcheonkim.todolist.account.dto.UserFormDto;
 import com.taekcheonkim.todolist.account.exception.UserExceptionHandler;
@@ -17,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,30 +25,41 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class UserMvcTest {
+public class SessionUserMvcTest {
     private MockMvc mockMvc;
     @Autowired
     private SessionUserController sessionUserController;
     private final UserFormDto userFormDto;
-    private final byte[] userFormDtoBytes;
     private final SavedUserDto savedUserDto;
+    private final LoginDto loginDto;
+    private final byte[] userFormDtoBytes;
     private final byte[] savedUserDtoBytes;
+    private final byte[] loginDtoBytes;
 
-
-    public UserMvcTest() throws JsonProcessingException {
+    public SessionUserMvcTest() throws JsonProcessingException {
         String email = "email@test.com";
         String password = "password";
         String nickname = "nickname";
         this.userFormDto = new UserFormDto(email, password, nickname);
+        this.savedUserDto = new SavedUserDto(email, nickname);
+        this.loginDto = new LoginDto(email, password);
+
         ObjectMapper objectMapper = new ObjectMapper();
         this.userFormDtoBytes = objectMapper.writeValueAsBytes(userFormDto);
-        this.savedUserDto = new SavedUserDto(email, nickname);
         this.savedUserDtoBytes = objectMapper.writeValueAsBytes(savedUserDto);
+        this.loginDtoBytes = objectMapper.writeValueAsBytes(loginDto);
     }
 
     MockHttpServletRequestBuilder signUpRequest(byte[] content) {
         return MockMvcRequestBuilders
                 .post("/users/signup")
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON);
+    }
+
+    MockHttpServletRequestBuilder signInRequest(byte[] content) {
+        return MockMvcRequestBuilders
+                .post("/users/signin")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON);
     }
@@ -64,7 +75,7 @@ public class UserMvcTest {
     @Test
     void successSignUp() throws Exception {
         mockMvc.perform(signUpRequest(userFormDtoBytes))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andExpect(content().bytes(savedUserDtoBytes));
     }
 
@@ -73,6 +84,41 @@ public class UserMvcTest {
         mockMvc.perform(signUpRequest(userFormDtoBytes))
                 .andExpect(status().isCreated());
         mockMvc.perform(signUpRequest(userFormDtoBytes))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void failSignUpWithNullUserFormDto() throws Exception {
+        mockMvc.perform(signUpRequest(userFormDtoBytes))
+                .andExpect(status().isCreated());
+        mockMvc.perform(signUpRequest(null))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void successSignIn() throws Exception {
+        mockMvc.perform(signUpRequest(userFormDtoBytes))
+                .andExpect(status().isCreated());
+        mockMvc.perform(signInRequest(loginDtoBytes))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void failSignInWithInvalidLoginDto() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        LoginDto invalidLoginDto = new LoginDto("invalid@email.com", "password");
+        byte[] invalidLoginDtoBytes = objectMapper.writeValueAsBytes(invalidLoginDto);
+        mockMvc.perform(signUpRequest(userFormDtoBytes))
+                .andExpect(status().isCreated());
+        mockMvc.perform(signInRequest(invalidLoginDtoBytes))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void failSignInWithNullLoginDto() throws Exception {
+        mockMvc.perform(signUpRequest(userFormDtoBytes))
+                .andExpect(status().isCreated());
+        mockMvc.perform(signInRequest(null))
                 .andExpect(status().isBadRequest());
     }
 }
