@@ -17,9 +17,9 @@ public class AuthenticationManager {
         this.userRepository = userRepository;
     }
 
-    public AuthenticatedUserHolder authenticate(Optional<SignInFormDto> maybeLoginDto) {
-        if(maybeLoginDto.isPresent()) {
-            SignInFormDto signInFormDto = maybeLoginDto.get();
+    public AuthenticatedUserHolder authenticate(Optional<SignInFormDto> maybeSignInFormDto) {
+        if(maybeSignInFormDto.isPresent()) {
+            SignInFormDto signInFormDto = maybeSignInFormDto.get();
             if (userRepository.isExistByEmail(signInFormDto.getEmail())) {
                 Optional<User> maybeUser = userRepository.findByEmail(signInFormDto.getEmail());
                 return new AuthenticatedUserHolder(maybeUser);
