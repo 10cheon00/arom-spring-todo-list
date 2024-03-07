@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
 public class PasswordEncoder {
     private final String secretKey;
 
-    public PasswordEncoder(@Value(value = "${account.secret-key}")String secretKey) {
+    public PasswordEncoder(@Value(value = "${user.secret-key}")String secretKey) {
         this.secretKey = secretKey;
     }
 
