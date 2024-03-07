@@ -3,7 +3,7 @@ package com.taekcheonkim.todolist.account.controller;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.account.domain.User;
 import com.taekcheonkim.todolist.account.dto.SavedUserDto;
-import com.taekcheonkim.todolist.account.dto.UserFormDto;
+import com.taekcheonkim.todolist.account.dto.SignUpFormDto;
 import com.taekcheonkim.todolist.account.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +26,8 @@ public class UserController {
     }
 
     @PostMapping(SignUpPath)
-    public ResponseEntity<SavedUserDto> signUp(@RequestBody UserFormDto userFormDto) {
-        User savedUser = userService.signUp(Optional.ofNullable(userFormDto));
+    public ResponseEntity<SavedUserDto> signUp(@RequestBody SignUpFormDto signUpFormDto) {
+        User savedUser = userService.signUp(Optional.ofNullable(signUpFormDto));
         SavedUserDto savedUserDto = new SavedUserDto(savedUser.getEmail(), savedUser.getNickname());
         return new ResponseEntity<>(savedUserDto, HttpStatus.CREATED);
     }

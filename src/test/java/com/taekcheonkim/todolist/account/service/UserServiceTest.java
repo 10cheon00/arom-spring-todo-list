@@ -1,7 +1,7 @@
 package com.taekcheonkim.todolist.account.service;
 
 import com.taekcheonkim.todolist.account.domain.User;
-import com.taekcheonkim.todolist.account.dto.UserFormDto;
+import com.taekcheonkim.todolist.account.dto.SignUpFormDto;
 import com.taekcheonkim.todolist.account.exception.InvalidUserFormException;
 import com.taekcheonkim.todolist.account.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,14 +19,14 @@ public class UserServiceTest {
     private UserService userService;
     @Mock
     private UserRepository userRepository;
-    private final UserFormDto userFormDto;
+    private final SignUpFormDto signUpFormDto;
     private final User alreadyExistUser;
 
     public UserServiceTest() {
         String email = "test@domain.com";
         String password = "testpassword";
         String nickname = "testnickname";
-        this.userFormDto = new UserFormDto(email, password, nickname);
+        this.signUpFormDto = new SignUpFormDto(email, password, nickname);
         this.alreadyExistUser = new User(email, password, nickname);
     }
 
@@ -41,9 +41,9 @@ public class UserServiceTest {
         // given
         when(userRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
         // when
-        User signInUser = userService.signUp(Optional.of(userFormDto));
+        User signInUser = userService.signUp(Optional.of(signUpFormDto));
         // then
-        assertThat(signInUser.getEmail()).isEqualTo(userFormDto.getEmail());
+        assertThat(signInUser.getEmail()).isEqualTo(signUpFormDto.getEmail());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class UserServiceTest {
         // when
         // then
         assertThatThrownBy(() -> {
-            userService.signUp(Optional.of(userFormDto));
+            userService.signUp(Optional.of(signUpFormDto));
         }).isInstanceOf(InvalidUserFormException.class);
     }
 
@@ -64,7 +64,7 @@ public class UserServiceTest {
         // when
         // then
         assertThatThrownBy(() -> {
-            userService.signUp(Optional.of(userFormDto));
+            userService.signUp(Optional.of(signUpFormDto));
         }).isInstanceOf(InvalidUserFormException.class);
     }
 }

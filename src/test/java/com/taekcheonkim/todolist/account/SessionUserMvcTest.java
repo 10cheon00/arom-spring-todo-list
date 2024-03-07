@@ -3,9 +3,9 @@ package com.taekcheonkim.todolist.account;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taekcheonkim.todolist.account.controller.SessionUserController;
-import com.taekcheonkim.todolist.account.dto.LoginDto;
+import com.taekcheonkim.todolist.account.dto.SignInFormDto;
 import com.taekcheonkim.todolist.account.dto.SavedUserDto;
-import com.taekcheonkim.todolist.account.dto.UserFormDto;
+import com.taekcheonkim.todolist.account.dto.SignUpFormDto;
 import com.taekcheonkim.todolist.account.exception.UserExceptionHandler;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,9 +29,9 @@ public class SessionUserMvcTest {
     private MockMvc mockMvc;
     @Autowired
     private SessionUserController sessionUserController;
-    private final UserFormDto userFormDto;
+    private final SignUpFormDto signUpFormDto;
     private final SavedUserDto savedUserDto;
-    private final LoginDto loginDto;
+    private final SignInFormDto signInFormDto;
     private final byte[] userFormDtoBytes;
     private final byte[] savedUserDtoBytes;
     private final byte[] loginDtoBytes;
@@ -40,14 +40,14 @@ public class SessionUserMvcTest {
         String email = "email@test.com";
         String password = "password";
         String nickname = "nickname";
-        this.userFormDto = new UserFormDto(email, password, nickname);
+        this.signUpFormDto = new SignUpFormDto(email, password, nickname);
         this.savedUserDto = new SavedUserDto(email, nickname);
-        this.loginDto = new LoginDto(email, password);
+        this.signInFormDto = new SignInFormDto(email, password);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        this.userFormDtoBytes = objectMapper.writeValueAsBytes(userFormDto);
+        this.userFormDtoBytes = objectMapper.writeValueAsBytes(signUpFormDto);
         this.savedUserDtoBytes = objectMapper.writeValueAsBytes(savedUserDto);
-        this.loginDtoBytes = objectMapper.writeValueAsBytes(loginDto);
+        this.loginDtoBytes = objectMapper.writeValueAsBytes(signInFormDto);
     }
 
     MockHttpServletRequestBuilder signUpRequest(byte[] content) {
@@ -106,8 +106,8 @@ public class SessionUserMvcTest {
     @Test
     void failSignInWithInvalidLoginDto() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        LoginDto invalidLoginDto = new LoginDto("invalid@email.com", "password");
-        byte[] invalidLoginDtoBytes = objectMapper.writeValueAsBytes(invalidLoginDto);
+        SignInFormDto invalidSignInFormDto = new SignInFormDto("invalid@email.com", "password");
+        byte[] invalidLoginDtoBytes = objectMapper.writeValueAsBytes(invalidSignInFormDto);
         mockMvc.perform(signUpRequest(userFormDtoBytes))
                 .andExpect(status().isCreated());
         mockMvc.perform(signInRequest(invalidLoginDtoBytes))

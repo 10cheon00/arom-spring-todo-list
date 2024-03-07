@@ -2,7 +2,7 @@ package com.taekcheonkim.todolist.account.controller;
 
 import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
-import com.taekcheonkim.todolist.account.dto.LoginDto;
+import com.taekcheonkim.todolist.account.dto.SignInFormDto;
 import com.taekcheonkim.todolist.account.exception.InvalidLoginFormException;
 import com.taekcheonkim.todolist.account.authentication.SessionAttributes;
 import com.taekcheonkim.todolist.account.service.UserService;
@@ -26,8 +26,8 @@ public class SessionUserController extends UserController {
     }
 
     @PostMapping(SignInPath)
-    public void signIn(@RequestBody LoginDto loginDto, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        AuthenticatedUserHolder authenticatedUserHolder = authenticationManager.authenticate(Optional.ofNullable(loginDto));
+    public void signIn(@RequestBody SignInFormDto signInFormDto, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        AuthenticatedUserHolder authenticatedUserHolder = authenticationManager.authenticate(Optional.ofNullable(signInFormDto));
         if (authenticatedUserHolder.isAuthenticated()) {
             HttpSession httpSession = request.getSession();
             httpSession.setAttribute(SessionAttributes.Authenticated, true);

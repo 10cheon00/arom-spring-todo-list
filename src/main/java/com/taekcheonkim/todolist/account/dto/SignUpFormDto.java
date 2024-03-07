@@ -1,17 +1,17 @@
 package com.taekcheonkim.todolist.account.dto;
 
-public class UserFormDto {
+public class SignUpFormDto {
     private String email;
     private String password;
     private String nickname;
 
-    public UserFormDto(String email, String password, String nickname) {
+    public SignUpFormDto(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
     }
 
-    public UserFormDto() {
+    public SignUpFormDto() {
         this.email = "";
         this.password = "";
         this.nickname = "";

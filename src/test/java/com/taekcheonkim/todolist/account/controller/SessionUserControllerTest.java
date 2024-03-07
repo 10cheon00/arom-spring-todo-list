@@ -4,8 +4,8 @@ import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.account.authentication.SessionAttributes;
 import com.taekcheonkim.todolist.account.domain.User;
-import com.taekcheonkim.todolist.account.dto.LoginDto;
-import com.taekcheonkim.todolist.account.dto.UserFormDto;
+import com.taekcheonkim.todolist.account.dto.SignInFormDto;
+import com.taekcheonkim.todolist.account.dto.SignUpFormDto;
 import com.taekcheonkim.todolist.account.exception.InvalidLoginFormException;
 import com.taekcheonkim.todolist.account.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,9 +33,9 @@ public class SessionUserControllerTest {
     private final AuthenticatedUserHolder authenticatedUserHolder;
     private final AuthenticatedUserHolder notAuthenticatedUserHolder;
 
-    private final UserFormDto userFormDto;
-    private final LoginDto loginDto;
-    private final LoginDto invalidLoginDto;
+    private final SignUpFormDto signUpFormDto;
+    private final SignInFormDto signInFormDto;
+    private final SignInFormDto invalidSignInFormDto;
     private final User savedUser;
 
     private MockHttpServletRequest request;
@@ -46,10 +46,10 @@ public class SessionUserControllerTest {
         String email = "email@test.com";
         String password = "password";
         String nickname = "nickname";
-        this.userFormDto = new UserFormDto(email, password, nickname);
-        this.loginDto = new LoginDto(email, password);
-        this.invalidLoginDto = new LoginDto(email, password);
-        this.savedUser = new User(this.userFormDto);
+        this.signUpFormDto = new SignUpFormDto(email, password, nickname);
+        this.signInFormDto = new SignInFormDto(email, password);
+        this.invalidSignInFormDto = new SignInFormDto(email, password);
+        this.savedUser = new User(this.signUpFormDto);
 
         this.authenticatedUserHolder = new AuthenticatedUserHolder(Optional.of(savedUser));
         this.notAuthenticatedUserHolder = new AuthenticatedUserHolder(Optional.empty());
@@ -73,7 +73,7 @@ public class SessionUserControllerTest {
         // when
         // then
         assertThatNoException().isThrownBy(() -> {
-            sessionUserController.signIn(loginDto, request, response);
+            sessionUserController.signIn(signInFormDto, request, response);
         });
         assertThat(response.getRedirectedUrl()).isNotEmpty();
         assertThat(httpSession.getAttribute(SessionAttributes.Authenticated)).isEqualTo(true);
@@ -87,7 +87,7 @@ public class SessionUserControllerTest {
         when(authenticationManager.authenticate(any(Optional.class))).thenReturn(notAuthenticatedUserHolder);
         // when
         // then
-        assertThatThrownBy(() -> sessionUserController.signIn(invalidLoginDto, request, response)).isInstanceOf(InvalidLoginFormException.class);
+        assertThatThrownBy(() -> sessionUserController.signIn(invalidSignInFormDto, request, response)).isInstanceOf(InvalidLoginFormException.class);
     }
 
     @Test

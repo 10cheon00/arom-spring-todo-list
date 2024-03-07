@@ -1,6 +1,6 @@
 package com.taekcheonkim.todolist.account.domain;
 
-import com.taekcheonkim.todolist.account.dto.UserFormDto;
+import com.taekcheonkim.todolist.account.dto.SignUpFormDto;
 import jakarta.persistence.*;
 
 @Entity
@@ -19,8 +19,8 @@ public class User {
         this("", "", "");
     }
 
-    public User(UserFormDto userFormDto) {
-        this(userFormDto.getEmail(), userFormDto.getPassword(), userFormDto.getNickname());
+    public User(SignUpFormDto signUpFormDto) {
+        this(signUpFormDto.getEmail(), signUpFormDto.getPassword(), signUpFormDto.getNickname());
     }
 
     public User(String email, String password, String nickname) {

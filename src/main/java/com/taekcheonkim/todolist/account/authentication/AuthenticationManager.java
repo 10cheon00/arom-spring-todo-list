@@ -1,7 +1,7 @@
 package com.taekcheonkim.todolist.account.authentication;
 
 import com.taekcheonkim.todolist.account.domain.User;
-import com.taekcheonkim.todolist.account.dto.LoginDto;
+import com.taekcheonkim.todolist.account.dto.SignInFormDto;
 import com.taekcheonkim.todolist.account.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,11 +17,11 @@ public class AuthenticationManager {
         this.userRepository = userRepository;
     }
 
-    public AuthenticatedUserHolder authenticate(Optional<LoginDto> maybeLoginDto) {
+    public AuthenticatedUserHolder authenticate(Optional<SignInFormDto> maybeLoginDto) {
         if(maybeLoginDto.isPresent()) {
-            LoginDto loginDto = maybeLoginDto.get();
-            if (userRepository.isExistByEmail(loginDto.getEmail())) {
-                Optional<User> maybeUser = userRepository.findByEmail(loginDto.getEmail());
+            SignInFormDto signInFormDto = maybeLoginDto.get();
+            if (userRepository.isExistByEmail(signInFormDto.getEmail())) {
+                Optional<User> maybeUser = userRepository.findByEmail(signInFormDto.getEmail());
                 return new AuthenticatedUserHolder(maybeUser);
             }
         }

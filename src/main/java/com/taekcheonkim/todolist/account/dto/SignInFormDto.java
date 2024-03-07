@@ -1,15 +1,15 @@
 package com.taekcheonkim.todolist.account.dto;
 
-public class LoginDto {
+public class SignInFormDto {
     private final String email;
     private final String password;
 
-    public LoginDto() {
+    public SignInFormDto() {
         this.email = "";
         this.password = "";
     }
 
-    public LoginDto(String email, String password) {
+    public SignInFormDto(String email, String password) {
         this.email = email;
         this.password = password;
     }
@@ -32,7 +32,7 @@ public class LoginDto {
             return false;
         }
 
-        LoginDto loginDto = (LoginDto) o;
-        return email.equals(loginDto.getEmail()) && password.equals(loginDto.getPassword());
+        SignInFormDto signInFormDto = (SignInFormDto) o;
+        return email.equals(signInFormDto.getEmail()) && password.equals(signInFormDto.getPassword());
     }
 }

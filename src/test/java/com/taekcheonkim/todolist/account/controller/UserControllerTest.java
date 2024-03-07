@@ -3,9 +3,9 @@ package com.taekcheonkim.todolist.account.controller;
 import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
 import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.account.domain.User;
-import com.taekcheonkim.todolist.account.dto.LoginDto;
+import com.taekcheonkim.todolist.account.dto.SignInFormDto;
 import com.taekcheonkim.todolist.account.dto.SavedUserDto;
-import com.taekcheonkim.todolist.account.dto.UserFormDto;
+import com.taekcheonkim.todolist.account.dto.SignUpFormDto;
 import com.taekcheonkim.todolist.account.exception.InvalidUserFormException;
 import com.taekcheonkim.todolist.account.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,9 +30,9 @@ public class UserControllerTest {
     private final AuthenticatedUserHolder authenticatedUserHolder;
     private final AuthenticatedUserHolder notAuthenticatedUserHolder;
 
-    private final UserFormDto userFormDto;
-    private final LoginDto loginDto;
-    private final LoginDto invalidLoginDto;
+    private final SignUpFormDto signUpFormDto;
+    private final SignInFormDto signInFormDto;
+    private final SignInFormDto invalidSignInFormDto;
     private final User savedUser;
     private final SavedUserDto savedUserDto;
 
@@ -40,10 +40,10 @@ public class UserControllerTest {
         String email = "email@test.com";
         String password = "password";
         String nickname = "nickname";
-        this.userFormDto = new UserFormDto(email, password, nickname);
-        this.loginDto = new LoginDto(email, password);
-        this.invalidLoginDto = new LoginDto(email, password);
-        this.savedUser = new User(this.userFormDto);
+        this.signUpFormDto = new SignUpFormDto(email, password, nickname);
+        this.signInFormDto = new SignInFormDto(email, password);
+        this.invalidSignInFormDto = new SignInFormDto(email, password);
+        this.savedUser = new User(this.signUpFormDto);
         this.savedUserDto = new SavedUserDto(email, nickname);
 
         this.authenticatedUserHolder = new AuthenticatedUserHolder(Optional.of(savedUser));
@@ -61,7 +61,7 @@ public class UserControllerTest {
         // given
         when(userService.signUp(any(Optional.class))).thenReturn(savedUser);
         // when
-        ResponseEntity<SavedUserDto> response = userController.signUp(userFormDto);
+        ResponseEntity<SavedUserDto> response = userController.signUp(signUpFormDto);
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(savedUserDto);
@@ -73,7 +73,7 @@ public class UserControllerTest {
         when(userService.signUp(any(Optional.class))).thenThrow(new InvalidUserFormException(""));
         // when
         // then
-        assertThatThrownBy(() -> userController.signUp(userFormDto)).isInstanceOf(InvalidUserFormException.class);
+        assertThatThrownBy(() -> userController.signUp(signUpFormDto)).isInstanceOf(InvalidUserFormException.class);
     }
 
     @Test

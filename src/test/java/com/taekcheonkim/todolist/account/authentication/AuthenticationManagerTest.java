@@ -1,9 +1,7 @@
 package com.taekcheonkim.todolist.account.authentication;
 
-import com.taekcheonkim.todolist.account.authentication.AuthenticatedUserHolder;
-import com.taekcheonkim.todolist.account.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.account.domain.User;
-import com.taekcheonkim.todolist.account.dto.LoginDto;
+import com.taekcheonkim.todolist.account.dto.SignInFormDto;
 import com.taekcheonkim.todolist.account.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +33,7 @@ public class AuthenticationManagerTest {
     private AuthenticationManager authenticationManager;
     @Mock
     private UserRepository userRepository;
-    private LoginDto loginDto;
+    private SignInFormDto signInFormDto;
     private final User user;
     private final String email;
     private final String password;
@@ -50,15 +48,15 @@ public class AuthenticationManagerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         authenticationManager = new AuthenticationManager(userRepository);
-        loginDto = new LoginDto(email, password);
-        when(userRepository.findByEmail(loginDto.getEmail())).thenReturn(Optional.of(user));
+        signInFormDto = new SignInFormDto(email, password);
+        when(userRepository.findByEmail(signInFormDto.getEmail())).thenReturn(Optional.of(user));
     }
 
     @Test
     void retrieveNotEmptyAuthenticatedUserHolderIfAuthenticateWithLoginDto() {
         // given
         // when
-        AuthenticatedUserHolder authenticatedUserHolder = authenticationManager.authenticate(Optional.of(loginDto));
+        AuthenticatedUserHolder authenticatedUserHolder = authenticationManager.authenticate(Optional.of(signInFormDto));
         // then
         assertThat(authenticatedUserHolder.getAuthenticatedUser()).isNotEqualTo(Optional.empty());
     }
