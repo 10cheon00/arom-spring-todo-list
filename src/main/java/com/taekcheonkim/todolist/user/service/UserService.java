@@ -2,7 +2,7 @@ package com.taekcheonkim.todolist.user.service;
 
 import com.taekcheonkim.todolist.user.domain.User;
 import com.taekcheonkim.todolist.user.dto.SignUpFormDto;
-import com.taekcheonkim.todolist.user.exception.InvalidSignInFormException;
+import com.taekcheonkim.todolist.user.exception.InvalidSignUpFormException;
 import com.taekcheonkim.todolist.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -18,14 +18,17 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User signUp(Optional<SignUpFormDto> maybeUserFormDto) throws InvalidSignInFormException {
+    public User signUp(Optional<SignUpFormDto> maybeUserFormDto) throws InvalidSignUpFormException {
         if (maybeUserFormDto.isEmpty()) {
-            throw new InvalidSignInFormException("User form is empty.");
+            throw new InvalidSignUpFormException("User form is empty.");
         }
 
         SignUpFormDto signUpFormDto = maybeUserFormDto.get();
+        if(signUpFormDto.getNickname().isEmpty()) {
+            throw new InvalidSignUpFormException("Nickname is empty.");
+        }
         if (userRepository.isExistByEmail(signUpFormDto.getEmail())) {
-            throw new InvalidSignInFormException("Already exists email.");
+            throw new InvalidSignUpFormException("Already exists email.");
         }
 
         User user = new User(signUpFormDto);

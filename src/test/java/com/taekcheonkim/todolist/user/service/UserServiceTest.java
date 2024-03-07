@@ -2,7 +2,7 @@ package com.taekcheonkim.todolist.user.service;
 
 import com.taekcheonkim.todolist.user.domain.User;
 import com.taekcheonkim.todolist.user.dto.SignUpFormDto;
-import com.taekcheonkim.todolist.user.exception.InvalidSignInFormException;
+import com.taekcheonkim.todolist.user.exception.InvalidSignUpFormException;
 import com.taekcheonkim.todolist.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ public class UserServiceTest {
         // then
         assertThatThrownBy(() -> {
             userService.signUp(Optional.of(signUpFormDto));
-        }).isInstanceOf(InvalidSignInFormException.class);
+        }).isInstanceOf(InvalidSignUpFormException.class);
     }
 
     @Test
@@ -65,6 +65,6 @@ public class UserServiceTest {
         // then
         assertThatThrownBy(() -> {
             userService.signUp(Optional.of(signUpFormDto));
-        }).isInstanceOf(InvalidSignInFormException.class);
+        }).isInstanceOf(InvalidSignUpFormException.class);
     }
 }

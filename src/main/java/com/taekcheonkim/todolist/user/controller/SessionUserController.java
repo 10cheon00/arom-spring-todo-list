@@ -3,6 +3,7 @@ package com.taekcheonkim.todolist.user.controller;
 import com.taekcheonkim.todolist.user.authentication.AuthenticatedUserHolder;
 import com.taekcheonkim.todolist.user.authentication.AuthenticationManager;
 import com.taekcheonkim.todolist.user.dto.SignInFormDto;
+import com.taekcheonkim.todolist.user.exception.InvalidSignInFormException;
 import com.taekcheonkim.todolist.user.exception.InvalidSignUpFormException;
 import com.taekcheonkim.todolist.user.authentication.SessionAttributes;
 import com.taekcheonkim.todolist.user.service.UserService;
@@ -29,14 +30,14 @@ public class SessionUserController extends UserController {
 
     @PostMapping(SignInPath)
     @ResponseStatus(HttpStatus.OK)
-    public void signIn(@RequestBody SignInFormDto signInFormDto, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void signIn(@RequestBody SignInFormDto signInFormDto, HttpServletRequest request, HttpServletResponse response) throws InvalidSignInFormException {
         AuthenticatedUserHolder authenticatedUserHolder = authenticationManager.authenticate(Optional.ofNullable(signInFormDto));
         if (authenticatedUserHolder.isAuthenticated()) {
             HttpSession httpSession = request.getSession();
             httpSession.setAttribute(SessionAttributes.Authenticated, true);
             httpSession.setAttribute(SessionAttributes.AuthenticatedUserHolder, authenticatedUserHolder);
         } else {
-            throw new InvalidSignUpFormException();
+            throw new InvalidSignInFormException("SignIn is Failed due to invalid form.");
         }
     }
 }

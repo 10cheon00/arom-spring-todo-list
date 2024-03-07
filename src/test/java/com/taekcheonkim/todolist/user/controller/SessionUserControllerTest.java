@@ -6,7 +6,7 @@ import com.taekcheonkim.todolist.user.authentication.SessionAttributes;
 import com.taekcheonkim.todolist.user.domain.User;
 import com.taekcheonkim.todolist.user.dto.SignInFormDto;
 import com.taekcheonkim.todolist.user.dto.SignUpFormDto;
-import com.taekcheonkim.todolist.user.exception.InvalidSignUpFormException;
+import com.taekcheonkim.todolist.user.exception.InvalidSignInFormException;
 import com.taekcheonkim.todolist.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,7 +75,7 @@ public class SessionUserControllerTest {
         assertThatNoException().isThrownBy(() -> {
             sessionUserController.signIn(signInFormDto, request, response);
         });
-        assertThat(response.getRedirectedUrl()).isNotEmpty();
+        assertThat(response.getStatus()).isEqualTo(200);
         assertThat(httpSession.getAttribute(SessionAttributes.Authenticated)).isEqualTo(true);
         AuthenticatedUserHolder result = (AuthenticatedUserHolder) httpSession.getAttribute(SessionAttributes.AuthenticatedUserHolder);
         assertThat(result.isAuthenticated()).isEqualTo(true);
@@ -87,7 +87,7 @@ public class SessionUserControllerTest {
         when(authenticationManager.authenticate(any(Optional.class))).thenReturn(notAuthenticatedUserHolder);
         // when
         // then
-        assertThatThrownBy(() -> sessionUserController.signIn(invalidSignInFormDto, request, response)).isInstanceOf(InvalidSignUpFormException.class);
+        assertThatThrownBy(() -> sessionUserController.signIn(invalidSignInFormDto, request, response)).isInstanceOf(InvalidSignInFormException.class);
     }
 
     @Test
@@ -96,6 +96,6 @@ public class SessionUserControllerTest {
         when(authenticationManager.authenticate(any(Optional.class))).thenReturn(notAuthenticatedUserHolder);
         // when
         // then
-        assertThatThrownBy(() -> sessionUserController.signIn(null, request, response)).isInstanceOf(InvalidSignUpFormException.class);
+        assertThatThrownBy(() -> sessionUserController.signIn(null, request, response)).isInstanceOf(InvalidSignInFormException.class);
     }
 }
