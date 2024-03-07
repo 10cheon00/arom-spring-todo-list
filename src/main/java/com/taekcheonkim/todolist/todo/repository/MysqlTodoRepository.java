@@ -35,6 +35,11 @@ public class MysqlTodoRepository implements TodoRepository {
     }
 
     @Override
+    public boolean isExistById(Long id) {
+        return false;
+    }
+
+    @Override
     public void update(Todo todo) {
         entityManager.merge(todo);
     }

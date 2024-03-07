@@ -8,6 +8,7 @@ public interface TodoRepository {
     void save(Todo todo);
     List<Todo> findAll();
     Todo findById(Long id);
+    boolean isExistById(Long id);
     void update(Todo todo);
     void delete(Todo todo);
     void deleteAll();
