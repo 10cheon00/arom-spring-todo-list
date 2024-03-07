@@ -75,7 +75,7 @@ public class SessionUserMvcTest {
     @Test
     void successSignUp() throws Exception {
         mockMvc.perform(signUpRequest(userFormDtoBytes))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().bytes(savedUserDtoBytes));
     }
 
