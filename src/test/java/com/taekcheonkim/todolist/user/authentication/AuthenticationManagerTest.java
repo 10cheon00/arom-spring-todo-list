@@ -49,16 +49,17 @@ public class AuthenticationManagerTest {
         MockitoAnnotations.openMocks(this);
         authenticationManager = new AuthenticationManager(userRepository);
         signInFormDto = new SignInFormDto(email, password);
-        when(userRepository.findByEmail(signInFormDto.getEmail())).thenReturn(Optional.of(user));
     }
 
     @Test
     void retrieveNotEmptyAuthenticatedUserHolderIfAuthenticateWithSignUpFormDto() {
         // given
+        when(userRepository.isExistByEmail(any(String.class))).thenReturn(true);
+        when(userRepository.findByEmail(signInFormDto.getEmail())).thenReturn(Optional.of(user));
         // when
         AuthenticatedUserHolder authenticatedUserHolder = authenticationManager.authenticate(Optional.of(signInFormDto));
         // then
-        assertThat(authenticatedUserHolder.getAuthenticatedUser()).isNotEqualTo(Optional.empty());
+        assertThat(authenticatedUserHolder.getAuthenticatedUser().isEmpty()).isFalse();
     }
 
     @Test
@@ -73,7 +74,7 @@ public class AuthenticationManagerTest {
     @Test
     void retrieveEmptyAuthenticatedUserHolderIfAuthenticateWithInvalidSignUpFormDto() {
         // given
-        when(userRepository.isExistByEmail(any(String.class))).thenReturn(true);
+        when(userRepository.isExistByEmail(any(String.class))).thenReturn(false);
         // when
         AuthenticatedUserHolder authenticatedUserHolder = authenticationManager.authenticate(Optional.of(signInFormDto));
         // then
