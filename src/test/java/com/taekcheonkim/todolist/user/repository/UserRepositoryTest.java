@@ -45,8 +45,7 @@ public class UserRepositoryTest {
         User user = this.generateUser();
         userRepository.save(user);
         // when
-        Optional<User> maybeUser = userRepository.findByEmail(email);
-        User foundUser = maybeUser.get();
+        User foundUser = userRepository.findByEmail(email);
         // then
         assertThat(foundUser.getEmail()).isEqualTo(user.getEmail());
     }

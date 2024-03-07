@@ -35,10 +35,10 @@ public class MysqlUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public User findByEmail(String email) {
         TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class);
         query.setParameter("email", email);
-        return Optional.ofNullable(query.getSingleResult());
+        return query.getSingleResult();
     }
 
     @Override

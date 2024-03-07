@@ -24,8 +24,8 @@ public class AuthenticationManager {
         if(maybeSignInFormDto.isPresent()) {
             SignInFormDto signInFormDto = maybeSignInFormDto.get();
             if (userRepository.isExistByEmail(signInFormDto.getEmail())) {
-                Optional<User> maybeUser = userRepository.findByEmail(signInFormDto.getEmail());
-                return new AuthenticatedUserHolder(maybeUser);
+                User user = userRepository.findByEmail(signInFormDto.getEmail());
+                return new AuthenticatedUserHolder(Optional.of(user));
             }
         }
         return new AuthenticatedUserHolder(Optional.empty());
