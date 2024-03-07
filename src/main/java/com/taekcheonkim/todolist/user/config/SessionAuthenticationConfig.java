@@ -9,7 +9,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@ConditionalOnProperty(value = "account.authentication", havingValue = "session")
+@ConditionalOnProperty(value = "user.authentication", havingValue = "session")
 @Configuration
 public class SessionAuthenticationConfig implements AuthenticationConfig {
     private final AuthenticationContext authenticationContext;
