@@ -3,6 +3,7 @@ package com.taekcheonkim.todolist.user.authentication;
 import com.taekcheonkim.todolist.user.domain.User;
 import com.taekcheonkim.todolist.user.dto.SignInFormDto;
 import com.taekcheonkim.todolist.user.repository.UserRepository;
+import com.taekcheonkim.todolist.user.util.PasswordEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -32,6 +33,8 @@ import static org.mockito.Mockito.*;
 public class AuthenticationManagerTest {
     private AuthenticationManager authenticationManager;
     @Mock
+    private PasswordEncoder passwordEncoder;
+    @Mock
     private UserRepository userRepository;
     private SignInFormDto signInFormDto;
     private final User user;
@@ -47,19 +50,22 @@ public class AuthenticationManagerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        authenticationManager = new AuthenticationManager(userRepository);
+        authenticationManager = new AuthenticationManager(userRepository, passwordEncoder);
         signInFormDto = new SignInFormDto(email, password);
     }
 
     @Test
     void retrieveNotEmptyAuthenticatedUserHolderIfAuthenticateWithSignUpFormDto() {
         // given
+        String encodedKey = "this is encoded key which manipulated for test";
         when(userRepository.isExistByEmail(any(String.class))).thenReturn(true);
         when(userRepository.findByEmail(signInFormDto.getEmail())).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode(any(String.class))).thenReturn(encodedKey);
         // when
         AuthenticatedUserHolder authenticatedUserHolder = authenticationManager.authenticate(Optional.of(signInFormDto));
         // then
         assertThat(authenticatedUserHolder.getAuthenticatedUser().isEmpty()).isFalse();
+        verify(passwordEncoder, atLeastOnce()).encode(any(String.class));
     }
 
     @Test
