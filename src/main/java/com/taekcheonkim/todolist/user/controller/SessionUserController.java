@@ -31,6 +31,9 @@ public class SessionUserController extends UserController {
     @PostMapping(SignInPath)
     @ResponseStatus(HttpStatus.OK)
     public void signIn(@RequestBody SignInFormDto signInFormDto, HttpServletRequest request, HttpServletResponse response) throws InvalidSignInFormException {
+        if (signInFormDto == null) {
+            throw new InvalidSignInFormException("SignIn is Failed due to invalid form.");
+        }
         AuthenticatedUserHolder authenticatedUserHolder = authenticationManager.authenticate(Optional.ofNullable(signInFormDto));
         if (authenticatedUserHolder.isAuthenticated()) {
             HttpSession httpSession = request.getSession();
