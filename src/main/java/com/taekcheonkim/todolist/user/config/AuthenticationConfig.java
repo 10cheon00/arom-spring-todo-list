@@ -6,5 +6,5 @@ import org.springframework.context.annotation.Bean;
 
 public interface AuthenticationConfig {
     @Bean
-    FilterRegistrationBean<AuthenticationFilter> sessionFilterRegistrationBean(FilterRegistrationBean<AuthenticationFilter> filterRegistrationBean);
+    FilterRegistrationBean<AuthenticationFilter> filterRegistrationBean(FilterRegistrationBean<AuthenticationFilter> filterRegistrationBean);
 }

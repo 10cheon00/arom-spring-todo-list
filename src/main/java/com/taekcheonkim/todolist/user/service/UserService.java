@@ -4,6 +4,7 @@ import com.taekcheonkim.todolist.user.domain.User;
 import com.taekcheonkim.todolist.user.dto.SignUpFormDto;
 import com.taekcheonkim.todolist.user.exception.InvalidSignUpFormException;
 import com.taekcheonkim.todolist.user.repository.UserRepository;
+import com.taekcheonkim.todolist.user.util.EmailPatternValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,10 @@ public class UserService {
         }
         if (userRepository.isExistByEmail(signUpFormDto.getEmail())) {
             throw new InvalidSignUpFormException("Already exists email.");
+        }
+        EmailPatternValidator emailPatternValidator = new EmailPatternValidator();
+        if (!emailPatternValidator.isValidEmail(signUpFormDto.getEmail())) {
+            throw new InvalidSignUpFormException("Email is not valid.");
         }
 
         User user = new User(signUpFormDto);

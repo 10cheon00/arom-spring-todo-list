@@ -18,6 +18,7 @@ public class AuthorizationConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthorizationInterceptor(authenticationContext));
+        registry.addInterceptor(new AuthorizationInterceptor(authenticationContext))
+                .addPathPatterns("/*");
     }
 }
