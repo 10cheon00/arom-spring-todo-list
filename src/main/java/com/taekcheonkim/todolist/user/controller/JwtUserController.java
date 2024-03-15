@@ -22,7 +22,7 @@ import java.io.Writer;
 import java.util.Optional;
 
 @RestController
-@ConditionalOnProperty(name = "user.authentication.method", havingValue = "jwt")
+@ConditionalOnProperty(name = "user.authentication.type", havingValue = "jwt")
 public class JwtUserController extends UserController {
     public final JwtGenerator jwtGenerator;
 

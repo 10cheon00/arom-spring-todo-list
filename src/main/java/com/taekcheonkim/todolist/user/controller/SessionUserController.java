@@ -22,7 +22,7 @@ import java.util.Optional;
 
 // todo: RestController를 UserController에 붙이면 테스트를 수정해야함
 @RestController
-@ConditionalOnProperty(name = "user.authentication.method", havingValue = "session")
+@ConditionalOnProperty(name = "user.authentication.type", havingValue = "session")
 public class SessionUserController extends UserController {
     public SessionUserController(UserService userService, AuthenticationManager authenticationManager) {
         super(userService, authenticationManager);

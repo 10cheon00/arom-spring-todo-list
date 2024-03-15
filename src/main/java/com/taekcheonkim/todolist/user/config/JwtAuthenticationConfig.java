@@ -12,7 +12,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@ConditionalOnProperty(value = "user.authentication.method", havingValue = "jwt")
+@ConditionalOnProperty(value = "user.authentication.type", havingValue = "jwt")
 @Configuration
 public class JwtAuthenticationConfig implements AuthenticationConfig {
     private final AuthenticationContext authenticationContext;
