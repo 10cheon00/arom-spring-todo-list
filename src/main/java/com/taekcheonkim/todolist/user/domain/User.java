@@ -4,6 +4,7 @@ import com.taekcheonkim.todolist.user.dto.SignUpFormDto;
 import jakarta.persistence.*;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 public class User {
@@ -16,6 +17,9 @@ public class User {
     private String password;
     @Column(nullable = false)
     private String nickname;
+    @Column(columnDefinition = "BIT(1) DEFAULT b'0'")
+    private boolean enabled;
+    private String verificationCode;
 
     public User() {
         this("", "", "");
@@ -29,6 +33,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.verificationCode = UUID.randomUUID().toString();
     }
 
     public String getEmail() {
@@ -66,5 +71,21 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id, email, password, nickname);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
     }
 }

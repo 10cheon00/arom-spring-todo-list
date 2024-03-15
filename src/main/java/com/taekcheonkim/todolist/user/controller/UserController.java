@@ -31,4 +31,9 @@ public class UserController {
         SavedUserDto savedUserDto = new SavedUserDto(savedUser.getEmail(), savedUser.getNickname());
         return new ResponseEntity<>(savedUserDto, HttpStatus.CREATED);
     }
+
+    @GetMapping("/verification")
+    public void verification(@RequestParam String code) {
+        userService.verify(code);
+    }
 }

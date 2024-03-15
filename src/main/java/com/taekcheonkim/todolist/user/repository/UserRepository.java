@@ -9,4 +9,6 @@ public interface UserRepository {
     List<User> findAll();
     User findByEmail(String email);
     boolean isExistByEmail(String email);
+    boolean isExistByVerificationCode(String code);
+    User findByVerificationCode(String code);
 }

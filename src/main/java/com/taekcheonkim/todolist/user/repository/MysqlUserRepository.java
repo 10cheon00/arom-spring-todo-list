@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class MysqlUserRepository implements UserRepository {
@@ -46,5 +45,19 @@ public class MysqlUserRepository implements UserRepository {
         Query query = entityManager.createQuery("SELECT u FROM User u WHERE EXISTS (SELECT 1 FROM User t WHERE t.email = :email)", User.class);
         query.setParameter("email", email);
         return query.getResultList().size() == 1;
+    }
+
+    @Override
+    public boolean isExistByVerificationCode(String code) {
+        Query query = entityManager.createQuery("SELECT u FROM User u WHERE EXISTS (SELECT 1 FROM User t WHERE t.verificationCode = :verificationCode)", User.class);
+        query.setParameter("verificationCode", code);
+        return query.getResultList().size() == 1;
+    }
+
+    @Override
+    public User findByVerificationCode(String code) {
+        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE u.verificationCode = :verificationCode", User.class);
+        query.setParameter("verificationCode", code);
+        return query.getSingleResult();
     }
 }
