@@ -12,7 +12,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
-@ConditionalOnProperty(name = "user.authentication.method", havingValue = "jwt")
+@ConditionalOnProperty(name = "user.authentication.type", havingValue = "jwt")
 public class JwtGenerator {
     public final Long JWT_EXPIRATION;
     public final String JWT_SECRET;
