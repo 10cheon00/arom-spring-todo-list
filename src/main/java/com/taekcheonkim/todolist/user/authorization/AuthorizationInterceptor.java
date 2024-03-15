@@ -1,6 +1,7 @@
 package com.taekcheonkim.todolist.user.authorization;
 
 import com.taekcheonkim.todolist.user.authentication.AuthenticationContext;
+import com.taekcheonkim.todolist.user.domain.User;
 import com.taekcheonkim.todolist.user.exception.AccessDeniedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,8 +23,16 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         findPreAuthorizeAnnotationInHandler(handler);
-        if (hasPreAuthorizeAnnotation && !authenticationContext.getAuthenticatedUserHolder().isAuthenticated()) {
-            throw new AccessDeniedException();
+        if (hasPreAuthorizeAnnotation) {
+            if (authenticationContext.getAuthenticatedUserHolder().isAuthenticated()){
+                User user = authenticationContext.getAuthenticatedUserHolder().getAuthenticatedUser().get();
+                if (!user.isEnabled()) {
+                    throw new AccessDeniedException();
+                }
+            }
+            else {
+                throw new AccessDeniedException();
+            }
         }
         return true;
     }
